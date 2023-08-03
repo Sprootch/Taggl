@@ -12,7 +12,7 @@ let getTimeEntries(date: DateTime) =
     let endDate = startDate.AddMonths(1).AddDays(-1)
 
     TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
-
+    
 let parseDuration(duration: int64) = if (duration < 0) then 0L else duration
 
 let parseDate(dateStr: string) =
@@ -41,12 +41,30 @@ let timeEntries =
             |> Option.defaultValue 0L
           Desc = te.Description })
 
-let grp =
-    timeEntries
-    |> List.groupBy (fun te -> te.Date, te.ProjectName)
-    |> List.map (fun (key, list) ->
-        { Date = fst key
-          Project = snd key 
-          Duration = TimeSpan.FromSeconds(list |> List.sumBy (fun te -> te.Duration |> float)) })
+let rec aggregateDuration (dict:Map<DateOnly, int64>) (te:MyTimeEntry list) =
+    match te with
+    | [] -> dict
+    | head::tail ->
+        match dict |> Map.tryFind head.Date with
+        | None -> aggregateDuration (dict |> Map.add head.Date head.Duration) tail
+        | Some value -> aggregateDuration (dict |> Map.add head.Date (value + head.Duration)) tail
+        // if (dict |> Map.exists (fun k v -> k = head.Date))
+        // then
+        //     printfn "found %A" head.Date
+        //     aggregateDuration (dict |> Map.add head.Date 0L) tail
+        // else
+        //     aggregateDuration (dict |> Map.add head.Date head.Duration) tail
+    
+let z = timeEntries |> aggregateDuration Map.empty
+z |> Map.iter (fun k v -> printfn "%A : %A" k (TimeSpan.FromSeconds(v |> float)))
+// printfn "%A" z
 
-grp |> List.iter (fun te -> printfn $"{te.Date} - {te.Project} : {te.Duration}")
+// let grp =
+//     timeEntries
+//     |> List.groupBy (fun te -> te.Date, te.ProjectName)
+//     |> List.map (fun (key, list) ->
+//         { Date = fst key
+//           Project = snd key 
+//           Duration = TimeSpan.FromSeconds(list |> List.sumBy (fun te -> te.Duration |> float)) })
+//
+// grp |> List.iter (fun te -> printfn $"{te.Date} - {te.Project} : {te.Duration}")
