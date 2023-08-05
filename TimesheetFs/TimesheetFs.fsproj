@@ -10,10 +10,11 @@
         <Compile Include="Toggl.Api.fs" />
         <Compile Include="Excel.fs" />
         <Compile Include="Timesheet.fs" />
-        <Compile Include="Program.fs"/>
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FsExcel" Version="0.0.46" />
       <PackageReference Include="Toggl.Api" Version="8.0.7" />
     </ItemGroup>
 

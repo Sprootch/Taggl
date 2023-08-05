@@ -6,7 +6,8 @@ open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
 
-let valueOrDefault (nullable: Nullable<int64>) =
+// TODO: check how to hide methos other than private
+let private valueOrDefault (nullable: Nullable<int64>) =
     if nullable.HasValue then nullable.Value else 0L
 
 let private tryFindProject (projects: Project list) (id: int64) =

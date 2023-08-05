@@ -1,14 +1,17 @@
 ﻿open System
 open Toggl.Api
 open Timesheet
+open Excel
 
 let client = TogglClient("77775ba928442e3ea39bcb4258a52710")
 
 let getTimeEntries = getTimeEntries client
 
-let timeEntries = getTimeEntries (DateTime(2023, 7, 1))
+let date = DateTime(2023, 7, 1)
+let timeEntries = getTimeEntries date
 
 timeEntries
-|> List.iter (fun te ->
-    printfn "%A" te.Date
-    printfn "%s : %A" te.ProjectName te.Duration)
+|> generateExcel date
+// |> List.iter (fun te ->
+//     printfn "%A" te.Date
+//     printfn "%s : %A" te.ProjectName te.Duration)
