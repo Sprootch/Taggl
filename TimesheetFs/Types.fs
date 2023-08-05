@@ -9,8 +9,8 @@ type FindMeAName =
 
 type MyTimeEntry =
     { Date: DateOnly
-      ProjectId: int64 option
-      Duration: int64 }
+      ProjectId: int64 
+      Duration: TimeSpan }
 type MyTimeEntry2 =
     { Date: DateOnly
       ProjectName: string
