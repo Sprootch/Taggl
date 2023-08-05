@@ -1,6 +1,7 @@
 ﻿module Timesheet
 
 open System
+open System.Globalization
 open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
@@ -9,6 +10,11 @@ let private tryFindProject (projects: Project list) (id: int64) =
     projects
     |> List.tryFind (fun prj -> prj.Id = id)
     |> Option.map (fun prj -> prj.Name)
+
+let parseDuration(duration: int64) = if (duration < 0) then 0L else duration
+
+let parseDate(dateStr: string) =
+    DateOnly.FromDateTime(DateTime.Parse(dateStr, CultureInfo.InvariantCulture))
 
 let getTimeEntries (client: TogglClient) (date: DateTime) =
     let startDate = DateTime(date.Year, date.Month, 1)
@@ -20,14 +26,14 @@ let getTimeEntries (client: TogglClient) (date: DateTime) =
         TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
 
     timeEntries
-    |> List.map (fun te ->
-        { Date = te.Date
-          ProjectName = te.ProjectId
-          Duration = TimeSpan.FromSeconds(te.Duration |> float) }
-        : MyTimeEntry2)
-// 1. Consolider avec le projet
-// 2. Aggréger les durées..
-// 3. Retourner un MyTimeEntry
+    // |> List.map (fun te ->
+    //     { Date = parseDate(te.Start)
+    //       ProjectName = "TODO"//te.ProjectId
+    //       Duration = TimeSpan.FromSeconds(te.Duration |> float) }
+    //     : MyTimeEntry2)
+// Aggréger les durées..
+// Consolider avec le projet
+// Retourner un MyTimeEntry
 
 
 
