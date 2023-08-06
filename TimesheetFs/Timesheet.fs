@@ -15,7 +15,7 @@ let private tryFindProject (projects: Project list) (id: int64) =
     |> List.tryFind (fun prj -> prj.Id = id)
     |> Option.map (fun prj -> prj.Name)
 
-let SumDuration timeEntries =
+let private sumDuration timeEntries =
     let rec add (dict: Map<DateOnly * int64, TimeSpan>) (te: MyTimeEntry list) =
             match te with
             | [] -> dict
@@ -42,7 +42,7 @@ let getTimeEntries (client: TogglClient) (date: DateTime) =
               Duration = TimeSpan.FromSeconds(te.Duration |> valueOrDefault |> float) })
 
     myTimeEntries
-    |> SumDuration
+    |> sumDuration
     |> List.map (fun ((date, prjId), duration) ->
         { Date = date
           ProjectName = (tryFindProject projects prjId) |> Option.defaultValue "No Project"

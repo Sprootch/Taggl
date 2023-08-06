@@ -12,7 +12,7 @@ let date = DateTime(2023, 7, 1)
 let timeEntries = getTimeEntries date
 
 timeEntries
-|> generateExcel date
+|> generateExcel "C:\\temp" date
 
 // timeEntries
 // |> List.iter (fun te ->
