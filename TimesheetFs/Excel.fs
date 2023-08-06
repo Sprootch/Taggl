@@ -6,7 +6,13 @@ open ClosedXML.Excel
 open FsExcel
 open Types
 
-let generateDates(startDate: System.DateTime) =
+let IsWeekend (date: DateOnly) =
+    match date.DayOfWeek with
+    | DayOfWeek.Saturday
+    | DayOfWeek.Sunday -> true
+    | _ -> false
+
+let generateDates (startDate: System.DateTime) =
     let endDate = startDate.AddMonths(1).AddDays(-1)
 
     startDate
@@ -28,8 +34,7 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
               [ String(day.ToString("dd/MM"))
                 CellSize(ColWidth 10)
                 FontEmphasis Bold
-                // TODO: active pattern
-                if (day.DayOfWeek = DayOfWeek.Saturday || day.DayOfWeek = DayOfWeek.Sunday) then
+                if (day |> IsWeekend) then
                     BackgroundColor grey ]
 
       Go NewRow
@@ -43,18 +48,28 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
               | None ->
                   Cell
                       [ String ""
-                        if (day.DayOfWeek = DayOfWeek.Saturday || day.DayOfWeek = DayOfWeek.Sunday) then
+                        if (day |> IsWeekend) then
                             BackgroundColor grey ]
               | Some item ->
                   Cell
                       [ TimeSpan item.Duration
                         FormatCode "hh:mm"
-                        if (day.DayOfWeek = DayOfWeek.Saturday || day.DayOfWeek = DayOfWeek.Sunday) then
+                        if (day |> IsWeekend) then
                             BackgroundColor grey ]
 
           Go NewRow
-          // TODO: ajouter une ligne de sum
-      // SizeAll(ColWidth 15)
-      // AutoFit AllCols
+
+      Go NewRow
+      Go(Indent 2)
+
+      // TODO: ajouter une ligne de sum
+      for idx, day in (generateDates date) |> Seq.indexed do
+          if (day |> IsWeekend) then
+              Cell [ String "" ]
+          else
+              let column = char(65 + 1 + idx)
+              // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
+              Cell [ FormulaA1 $"=SUM({column}2:{column}6)"; FormatCode "hh:mm" ]
+
       ]
     |> Render.AsFile(Path.Combine(path, $"TS-{date:yyyyMM}.xlsx"))
