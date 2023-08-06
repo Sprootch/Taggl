@@ -2,39 +2,58 @@
 
 open System
 open System.IO
+open ClosedXML.Excel
 open FsExcel
 open Types
 
-let genDates (startDate: System.DateTime) =
+let generateDates (startDate: System.DateTime) =
     let endDate = startDate.AddMonths(1).AddDays(-1)
 
-    startDate |> Seq.unfold
-        (fun date ->
-            if date <= endDate then
-                Some(date, date.AddDays(1.0))
-            else
-                None)
-        |> Seq.map (DateOnly.FromDateTime)
+    startDate
+    |> Seq.unfold (fun date ->
+        if date <= endDate then
+            Some(date, date.AddDays(1.0))
+        else
+            None)
+    |> Seq.map DateOnly.FromDateTime
 
 let generateExcel (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let savePath = "/home/lapin"
+    let grey = XLColor.FromArgb(0, 169, 169, 169)
+    // if not (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) then
+    //     LoadOptions.DefaultGraphicEngine <- new ClosedXML.Graphics.DefaultGraphicEngine("Liberation Sans")
 
-    [
-      Go(Indent 2)
-      for date in genDates date do
-          Cell [ DateTime (date.ToDateTime TimeOnly.MinValue) ]
+    [ Go(Indent 2)
+      for day in generateDates date do
+          Cell
+              [ DateTime(day.ToDateTime TimeOnly.MinValue)
+                CellSize(ColWidth 15)
+                FontEmphasis Bold
+                // TODO: active pattern
+                if (day.DayOfWeek = DayOfWeek.Saturday or day.DayOfWeek = DayOfWeek.Sunday) then
+                    BackgroundColor grey ]
+
       Go NewRow
       Go(Indent 1)
-      for prjName, list in (timeEntries |> List.groupBy (fun te -> te.ProjectName)) do
-          Cell [ String prjName ]
 
-          for date in genDates date do
-              match list |> List.tryFind (fun te -> te.Date = date) with
-              | None -> Cell [ String "" ]
-              | Some item -> Cell [ TimeSpan item.Duration ]
-              
+      for prjName, list in (timeEntries |> List.groupBy (fun te -> te.ProjectName)) do
+          Cell [ String prjName ; CellSize (ColWidth 25); FontEmphasis Bold ]
+
+          for day in generateDates date do
+              match list |> List.tryFind (fun te -> te.Date = day) with
+              | None ->
+                  Cell
+                      [ String ""
+                        if (day.DayOfWeek = DayOfWeek.Saturday or day.DayOfWeek = DayOfWeek.Sunday) then
+                            BackgroundColor grey ]
+              | Some item ->
+                  Cell
+                      [ TimeSpan item.Duration
+                        if (day.DayOfWeek = DayOfWeek.Saturday or day.DayOfWeek = DayOfWeek.Sunday) then
+                            BackgroundColor grey ]
+
           Go NewRow
-          SizeAll (ColWidth 15)
-    ]
-    
+          // SizeAll(ColWidth 15)
+      // AutoFit AllCols
+      ]
     |> Render.AsFile(Path.Combine(savePath, $"TS_{date:yyyy_MM}.xlsx"))
