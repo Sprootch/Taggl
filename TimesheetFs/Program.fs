@@ -11,10 +11,9 @@ let getTimeEntries = getTimeEntries client
 
 // TODO:
 // take first day of last month by default.
-// Verbose to debug print ?
-// No sum for weekends (use genDates and compute sum in F#)
-// FormatCode in constant.
+// Verbose param to debug print ?
 // Refacto ts generation.
+// Spectre.Console
 let date = DateTime(2023, 7, 1)
 
 let generate(outputDirMaybe: DirectoryInfo option) =

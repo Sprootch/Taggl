@@ -5,9 +5,13 @@ open System.Diagnostics
 open System.IO
 open ClosedXML.Excel
 open FsExcel
+open Microsoft.FSharp.Core
 open Types
 
-let IsWeekend(date: DateOnly) =
+[<Literal>]
+let TimeFormat = "h \h mm"
+
+let private IsWeekend(date: DateOnly) =
     match date.DayOfWeek with
     | DayOfWeek.Saturday
     | DayOfWeek.Sunday -> true
@@ -24,29 +28,11 @@ let generateDates(startDate: System.DateTime) =
             None)
     |> Seq.map DateOnly.FromDateTime
 
-let addSumLine date =
-    let columns =
-        [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
-        |> List.append ([ 'B' .. 'Z' ] |> List.map string)
-
-    seq {
-        for c in columns do
-            // if (day |> IsWeekend) then
-            //     yield Cell [ String "" ]
-            // else
-            // let column = char (65 + 1 + idx)
-            // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
-            yield Cell [ FormulaA1 $"=SUM({c}2:{c}5)"; FormatCode "h \h mm" ]
-    }
-
 let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
 
-    // let workbook = new XLWorkbook("TS-Template.xlsx")
-    [
-      // Workbook workbook
-      Go(Indent 2)
+    [ Go(Indent 2)
       for day in generateDates date do
           Cell
               [ String(day.ToString("dd/MM"))
@@ -58,27 +44,43 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
       Go NewRow
       Go(Indent 1)
 
-      for prjName, te in (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) do
-          Cell [ String prjName; CellSize(ColWidth 25); FontEmphasis Bold ]
+      for projectName, te in (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) do
+          Cell [ String projectName; CellSize(ColWidth 25); FontEmphasis Bold ]
 
           for day in generateDates date do
-              Cell [
-                  if (day |> IsWeekend) then BackgroundColor grey
-                  
+              if (day |> IsWeekend) then
+                  Cell [ BackgroundColor grey ]
+              else
                   match te |> List.tryFind (fun te -> te.Date = day) with
-                  | None -> String ""
-                  | Some item -> TimeSpan item.Duration ; FormatCode "h \h mm"
-              ]
+                  | None -> Cell []
+                  | Some item -> Cell [ TimeSpan item.Duration; FormatCode TimeFormat ]
 
           Go NewRow
 
+      Go(Indent 2)
+      // Empty line
+      for day in generateDates date do
+          if (day |> IsWeekend) then
+              Cell [ BackgroundColor grey ]
+          else
+              Cell []
       Go NewRow
       Go(Indent 2)
 
-      for cell in addSumLine date do
-          cell
+      for day in generateDates date do
+          if (day |> IsWeekend) then
+              Cell [ BackgroundColor grey ]
+          else
+              let duration =
+                  timeEntries
+                  |> List.filter (fun te -> te.Date = day)
+                  |> List.sumBy (fun te -> te.Duration.TotalSeconds)
+                  |> TimeSpan.FromSeconds
 
-      ]
+              if (duration = TimeSpan.Zero) then
+                  Cell []
+              else
+                  Cell [ TimeSpan duration; FormatCode TimeFormat ] ]
     |> Render.AsFile(savePath)
 
     savePath
