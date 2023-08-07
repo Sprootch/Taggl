@@ -11,10 +11,14 @@
         <Compile Include="Excel.fs" />
         <Compile Include="Timesheet.fs" />
         <Compile Include="Program.fs" />
+        <Content Include="TS-Template.xlsx">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="FsExcel" Version="0.0.46" />
+      <PackageReference Include="FSharp.SystemCommandLine" Version="0.17.0-beta4" />
       <PackageReference Include="Toggl.Api" Version="8.0.7" />
     </ItemGroup>
 
