@@ -55,22 +55,17 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
       Go NewRow
       Go(Indent 1)
 
-      for prjName, list in (timeEntries |> List.groupBy (fun te -> te.ProjectName)) do
+      for prjName, te in (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) do
           Cell [ String prjName; CellSize(ColWidth 25); FontEmphasis Bold ]
 
           for day in generateDates date do
-              match list |> List.tryFind (fun te -> te.Date = day) with
-              | None ->
-                  Cell
-                      [ String ""
-                        if (day |> IsWeekend) then
-                            BackgroundColor grey ]
-              | Some item ->
-                  Cell
-                      [ TimeSpan item.Duration
-                        FormatCode "hh:mm"
-                        if (day |> IsWeekend) then
-                            BackgroundColor grey ]
+              Cell [
+                  if (day |> IsWeekend) then BackgroundColor grey
+                  
+                  match te |> List.tryFind (fun te -> te.Date = day) with
+                  | None -> String ""
+                  | Some item -> TimeSpan item.Duration
+              ]
 
           Go NewRow
 
