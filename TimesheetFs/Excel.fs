@@ -1,18 +1,19 @@
 ﻿module Excel
 
 open System
+open System.Diagnostics
 open System.IO
 open ClosedXML.Excel
 open FsExcel
 open Types
 
-let IsWeekend (date: DateOnly) =
+let IsWeekend(date: DateOnly) =
     match date.DayOfWeek with
     | DayOfWeek.Saturday
     | DayOfWeek.Sunday -> true
     | _ -> false
 
-let generateDates (startDate: System.DateTime) =
+let generateDates(startDate: System.DateTime) =
     let endDate = startDate.AddMonths(1).AddDays(-1)
 
     startDate
@@ -23,10 +24,23 @@ let generateDates (startDate: System.DateTime) =
             None)
     |> Seq.map DateOnly.FromDateTime
 
+let addSumLine date =
+    seq {
+        for idx, day in (generateDates date) |> Seq.indexed do
+            if (day |> IsWeekend) then
+                yield Cell [ String "" ]
+            else
+                let column = char (65 + 1 + idx)
+                // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
+                yield Cell [ FormulaA1 $"=SUM({column}2:{column}6)"; FormatCode "hh:mm" ]
+    }
+
 let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     // if not (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) then
     //     LoadOptions.DefaultGraphicEngine <- new ClosedXML.Graphics.DefaultGraphicEngine("Liberation Sans")
+
+    let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
 
     [ Go(Indent 2)
       for day in generateDates date do
@@ -62,14 +76,16 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
       Go NewRow
       Go(Indent 2)
 
-      // TODO: ajouter une ligne de sum
-      for idx, day in (generateDates date) |> Seq.indexed do
-          if (day |> IsWeekend) then
-              Cell [ String "" ]
-          else
-              let column = char(65 + 1 + idx)
-              // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
-              Cell [ FormulaA1 $"=SUM({column}2:{column}6)"; FormatCode "hh:mm" ]
+      // for cell in addSumLine date do
+      //     cell
 
       ]
-    |> Render.AsFile(Path.Combine(path, $"TS-{date:yyyyMM}.xlsx"))
+    |> Render.AsFile(savePath)
+
+    savePath
+
+let openFile (filename: string)  =
+    let psi = ProcessStartInfo(filename) 
+    psi.UseShellExecute <- true
+    let proc = Process.Start(psi) 
+    proc.WaitForExit()

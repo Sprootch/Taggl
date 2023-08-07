@@ -1,4 +1,5 @@
 ﻿open System
+open System.Diagnostics
 open Toggl.Api
 open Timesheet
 open Excel
@@ -14,6 +15,7 @@ let timeEntries = getTimeEntries date
 
 timeEntries
 |> generateExcel "C:\\temp" date
+|> openFile
 
 // timeEntries
 // |> List.iter (fun te ->
