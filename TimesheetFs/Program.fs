@@ -12,7 +12,8 @@ let getTimeEntries = getTimeEntries client
 // TODO:
 // take first day of last month by default.
 // Verbose to debug print ?
-// No sum for weekends.
+// No sum for weekends (use genDates and compute sum in F#)
+// FormatCode in constant.
 // Refacto ts generation.
 let date = DateTime(2023, 7, 1)
 

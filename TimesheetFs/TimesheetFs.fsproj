@@ -11,9 +11,6 @@
         <Compile Include="Excel.fs" />
         <Compile Include="Timesheet.fs" />
         <Compile Include="Program.fs" />
-        <Content Include="TS-Template.xlsx">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup>

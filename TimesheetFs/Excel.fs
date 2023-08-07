@@ -36,16 +36,16 @@ let addSumLine date =
             // else
             // let column = char (65 + 1 + idx)
             // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
-            yield Cell [ FormulaA1 $"=SUM({c}2:{c}5)" ]
+            yield Cell [ FormulaA1 $"=SUM({c}2:{c}5)"; FormatCode "h \h mm" ]
     }
 
 let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
 
-    let workbook = new XLWorkbook("TS-Template.xlsx")
+    // let workbook = new XLWorkbook("TS-Template.xlsx")
     [
-      Workbook workbook
+      // Workbook workbook
       Go(Indent 2)
       for day in generateDates date do
           Cell
@@ -67,7 +67,7 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
                   
                   match te |> List.tryFind (fun te -> te.Date = day) with
                   | None -> String ""
-                  | Some item -> TimeSpan item.Duration
+                  | Some item -> TimeSpan item.Duration ; FormatCode "h \h mm"
               ]
 
           Go NewRow
