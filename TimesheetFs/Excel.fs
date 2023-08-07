@@ -25,21 +25,22 @@ let generateDates(startDate: System.DateTime) =
     |> Seq.map DateOnly.FromDateTime
 
 let addSumLine date =
+    let columns =
+        [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
+        |> List.append ([ 'B' .. 'Z' ] |> List.map string)
+
     seq {
-        for idx, day in (generateDates date) |> Seq.indexed do
-            if (day |> IsWeekend) then
-                yield Cell [ String "" ]
-            else
-                let column = char (65 + 1 + idx)
-                // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
-                yield Cell [ FormulaA1 $"=SUM({column}2:{column}6)"; FormatCode "hh:mm" ]
+        for c in columns do
+            // if (day |> IsWeekend) then
+            //     yield Cell [ String "" ]
+            // else
+            // let column = char (65 + 1 + idx)
+            // Cell [ String $"{char(65 + 1 + idx)}{idx + 1}" ]
+            yield Cell [ FormulaA1 $"=SUM({c}2:{c}5)"; FormatCode "hh:mm" ]
     }
 
 let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
-    // if not (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) then
-    //     LoadOptions.DefaultGraphicEngine <- new ClosedXML.Graphics.DefaultGraphicEngine("Liberation Sans")
-
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
 
     [ Go(Indent 2)
@@ -76,16 +77,16 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
       Go NewRow
       Go(Indent 2)
 
-      // for cell in addSumLine date do
-      //     cell
+      for cell in addSumLine date do
+          cell
 
       ]
     |> Render.AsFile(savePath)
 
     savePath
 
-let openFile (filename: string)  =
-    let psi = ProcessStartInfo(filename) 
+let openFile(filename: string) =
+    let psi = ProcessStartInfo(filename)
     psi.UseShellExecute <- true
-    let proc = Process.Start(psi) 
+    let proc = Process.Start(psi)
     proc.WaitForExit()
