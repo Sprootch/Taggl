@@ -18,7 +18,6 @@ let getTimeEntries = getTimeEntries client
 
 // TODO:
 // have an Excel SUM
-// Print help
 // Refacto ts generation.
 // Verbose param to debug print ?
 // Spectre.Console
@@ -42,8 +41,8 @@ let main argv =
         description "Generates an Actiris Timesheet"
 
         inputs (
-            Input.OptionMaybe<DateTime>([ "--date"; "-d" ], "The timesheet date"),
-            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory")
+            Input.OptionMaybe<DateTime>([ "--date"; "-d" ], "The timesheet date. By default previous month"),
+            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default C:\\temp")
         )
 
         setHandler generate
