@@ -17,8 +17,9 @@ let client = TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
 // TODO:
-// have an Excel SUM
 // Refacto ts generation.
+// Try to go with real Actiris template.
+// check how to hide methods other than private
 // Verbose param to debug print ?
 // Spectre.Console
 

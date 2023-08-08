@@ -31,27 +31,29 @@ let generateDates(startDate: System.DateTime) =
 let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
-
+    let dates = date |> generateDates |> Seq.toList
+    let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) 
+    
     [ Go(Indent 2)
-      for day in generateDates date do
+      for date in dates do
           Cell
-              [ String(day.ToString("dd/MM"))
+              [ String(date.ToString("dd/MM"))
                 CellSize(ColWidth 10)
                 FontEmphasis Bold
-                if (day |> IsWeekend) then
+                if (date |> IsWeekend) then
                     BackgroundColor grey ]
 
       Go NewRow
       Go(Indent 1)
 
-      for projectName, te in (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) do
+      for projectName, te in projects do
           Cell [ String projectName; CellSize(ColWidth 25); FontEmphasis Bold ]
 
-          for day in generateDates date do
-              if (day |> IsWeekend) then
+          for date in dates do
+              if (date |> IsWeekend) then
                   Cell [ BackgroundColor grey ]
               else
-                  match te |> List.tryFind (fun te -> te.Date = day) with
+                  match te |> List.tryFind (fun te -> te.Date = date) with
                   | None -> Cell []
                   | Some item -> Cell [ TimeSpan item.Duration; FormatCode TimeFormat ]
 
@@ -59,28 +61,34 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
 
       Go(Indent 2)
       // Empty line
-      for day in generateDates date do
-          if (day |> IsWeekend) then
+      for date in dates do
+          if (date |> IsWeekend) then
               Cell [ BackgroundColor grey ]
           else
               Cell []
       Go NewRow
       Go(Indent 2)
 
-      for day in generateDates date do
-          if (day |> IsWeekend) then
+      for idx, date in dates |> List.indexed do
+          if (date |> IsWeekend) then
               Cell [ BackgroundColor grey ]
           else
+              let columns =
+                      [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
+                      |> List.append ([ 'B' .. 'Z' ] |> List.map string)
+
               let duration =
                   timeEntries
-                  |> List.filter (fun te -> te.Date = day)
+                  |> List.filter (fun te -> te.Date = date)
                   |> List.sumBy (fun te -> te.Duration.TotalSeconds)
                   |> TimeSpan.FromSeconds
 
               if (duration = TimeSpan.Zero) then
                   Cell []
               else
-                  Cell [ TimeSpan duration; FormatCode TimeFormat ] ]
+                  let column = columns[idx]
+                  let sumEnd = 1 + (projects |> List.length)
+                  Cell [ FormulaA1 $"=SUM({column}2:{column}{sumEnd})"; FormatCode TimeFormat ]]
     |> Render.AsFile(savePath)
 
     savePath

@@ -6,7 +6,6 @@ open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
 
-// TODO: check how to hide methos other than private
 let private valueOrDefault(nullable: Nullable<int64>) =
     if nullable.HasValue then nullable.Value else 0L
 
@@ -42,16 +41,12 @@ let getTimeEntries (client: TogglClient) (date: DateTime) =
 
     let projects = TogglApi.getProjects client |> Async.RunSynchronously
 
-    // TODO: in one shot
-    let myTimeEntries =
-        TogglApi.getTimeEntries client startDate endDate
-        |> Async.RunSynchronously
-        |> List.map (fun te ->
-            { Date = DateOnly.FromDateTime(DateTime.Parse(te.Start, CultureInfo.InvariantCulture))
-              ProjectId = te.ProjectId |> valueOrDefault
-              Duration = TimeSpan.FromSeconds(te.Duration |> valueOrDefault |> float) })
-
-    myTimeEntries
+    TogglApi.getTimeEntries client startDate endDate
+    |> Async.RunSynchronously
+    |> List.map (fun te ->
+        { Date = DateOnly.FromDateTime(DateTime.Parse(te.Start, CultureInfo.InvariantCulture))
+          ProjectId = te.ProjectId |> valueOrDefault
+          Duration = TimeSpan.FromSeconds(te.Duration |> valueOrDefault |> float) })
     |> sumDuration
     |> List.map (fun ((date, prjId), duration) ->
         { Date = date
