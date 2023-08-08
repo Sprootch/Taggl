@@ -18,6 +18,7 @@ let getTimeEntries = getTimeEntries client
 
 // TODO:
 // have an Excel SUM
+// Print help
 // Refacto ts generation.
 // Verbose param to debug print ?
 // Spectre.Console
@@ -31,9 +32,12 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     
     getTimeEntries date |> generateExcel outputDir startDate |> openFile
 
-
 [<EntryPoint>]
 let main argv =
+    if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
+        printfn "Please provide the Toggl api key in appsettings.json"
+        exit -1
+        
     rootCommand argv {
         description "Generates an Actiris Timesheet"
 
