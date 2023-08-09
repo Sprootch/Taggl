@@ -12,7 +12,7 @@ let settings =
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", false)
         .Build()
-        
+
 let client = TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
@@ -25,17 +25,18 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
     let startDate = DateTime(date.Year, date.Month, 1)
-    
+    let generateExcel = generateExcel outputDir startDate
+
     printfn $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
-    
-    getTimeEntries date |> generateExcel outputDir startDate |> openFile
+
+    date |> getTimeEntries |> generateExcel |> openFile
 
 [<EntryPoint>]
 let main argv =
     if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
         printfn "Please provide the Toggl api key in appsettings.json"
         exit -1
-        
+
     rootCommand argv {
         description "Generates an Actiris Timesheet"
 
