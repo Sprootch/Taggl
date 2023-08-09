@@ -6,13 +6,7 @@ open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
 
-let private roundSeconds(ts: TimeSpan) =
-    if (ts.Seconds <= 30) then
-        ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
-    else
-        ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
-
-let x (projects: Project list) (timeEntries: TimeEntry list) =
+let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     let getProjectName id =
         projects
         |> List.tryFind (fun prj -> prj.Id = id)
@@ -20,6 +14,12 @@ let x (projects: Project list) (timeEntries: TimeEntry list) =
         |> Option.defaultValue "No Project"
 
     let getDuration(te: TimeEntry list) =
+        let roundSeconds(ts: TimeSpan) =
+            if (ts.Seconds <= 30) then
+                ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
+            else
+                ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
+                
         te
         |> List.sumBy (fun te -> te.Duration |> Option.ofNullable |> Option.defaultValue 0)
         |> float
@@ -48,16 +48,4 @@ let getTimeEntries (client: TogglClient) (date: DateTime) =
     let timeEntries =
         TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
 
-    let res = x projects timeEntries
-
-    res
-// timeEntries
-// |> List.map (fun te ->
-//     { Date = DateOnly.FromDateTime(DateTime.Parse(te.Start, CultureInfo.InvariantCulture))
-//       ProjectId = te.ProjectId |> valueOrDefault
-//       Duration = TimeSpan.FromSeconds(te.Duration |> valueOrDefault |> float) })
-// |> sumDuration
-// |> List.map (fun ((date, prjId), duration) ->
-//     { Date = date
-//       ProjectName = (tryFindProject projects prjId) |> Option.defaultValue "No Project"
-//       Duration = duration })
+    timeEntries |> transform projects
