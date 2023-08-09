@@ -28,12 +28,16 @@ let generateDates(startDate: System.DateTime) =
             None)
     |> Seq.map DateOnly.FromDateTime
 
-let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEntry2 list) =
+let generateExcel (path: string) (date: System.DateTime) timeEntries =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList
-    let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort) 
-    
+    let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort)
+
+    let excelColumns =
+        [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
+        |> List.append ([ 'B' .. 'Z' ] |> List.map string)
+
     [ Go(Indent 2)
       for date in dates do
           Cell
@@ -60,7 +64,7 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
           Go NewRow
 
       Go(Indent 2)
-      // Empty line
+      // Empty line before sum
       for date in dates do
           if (date |> IsWeekend) then
               Cell [ BackgroundColor grey ]
@@ -73,10 +77,6 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
           if (date |> IsWeekend) then
               Cell [ BackgroundColor grey ]
           else
-              let columns =
-                      [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
-                      |> List.append ([ 'B' .. 'Z' ] |> List.map string)
-
               let duration =
                   timeEntries
                   |> List.filter (fun te -> te.Date = date)
@@ -86,9 +86,13 @@ let generateExcel (path: string) (date: System.DateTime) (timeEntries: MyTimeEnt
               if (duration = TimeSpan.Zero) then
                   Cell []
               else
-                  let column = columns[idx]
+                  let column = excelColumns[idx]
                   let sumEnd = 1 + (projects |> List.length)
-                  Cell [ FormulaA1 $"=SUM({column}2:{column}{sumEnd})"; FormatCode TimeFormat ]]
+
+                  Cell
+                      [ FormulaA1 $"=SUM({column}2:{column}{sumEnd})"
+                        FormatCode TimeFormat
+                        FontEmphasis Bold ] ]
     |> Render.AsFile(savePath)
 
     savePath

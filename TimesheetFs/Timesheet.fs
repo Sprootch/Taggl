@@ -6,61 +6,38 @@ open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
 
-let private valueOrDefault(nullable: Nullable<int64>) =
-    if nullable.HasValue then nullable.Value else 0L
-
-let private tryFindProject (projects: Project list) (id: int64 option) =
-    projects
-    |> List.tryFind (fun prj -> (prj.Id |> Option.ofNullable) = id)
-    |> Option.map (fun prj -> prj.Name)
-
 let private roundSeconds(ts: TimeSpan) =
     if (ts.Seconds <= 30) then
         ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
     else
         ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
 
-let private sumDuration timeEntries =
-    let rec add dict (te: MyTimeEntry list) =
-        match te with
-        | [] -> dict
-        | head :: tail ->
-            let key = (head.Date, head.ProjectId)
+let x (projects: Project list) (timeEntries: TimeEntry list) =
+    let getProjectName id =
+        projects
+        |> List.tryFind (fun prj -> prj.Id = id)
+        |> Option.map (fun prj -> prj.Name)
+        |> Option.defaultValue "No Project"
 
-            match dict |> Map.tryFind key with
-            | None -> add (dict |> Map.add key head.Duration) tail
-            | Some value -> add (dict |> Map.add key (value + head.Duration)) tail
+    let getDuration(te: TimeEntry list) =
+        te
+        |> List.sumBy (fun te -> te.Duration |> Option.ofNullable |> Option.defaultValue 0)
+        |> float
+        |> TimeSpan.FromSeconds
+        |> roundSeconds
 
-    add Map.empty timeEntries
-    |> Map.map (fun _ duration -> duration |> roundSeconds)
-    |> Map.toList
-
-let x (projects: Project list) (te: TimeEntry list) =
-    let grp = te |> List.groupBy (fun te -> te.ProjectId)
-
-    for prj, te in grp do
-        let name =
-            prj
-            |> Option.ofNullable
-            |> tryFindProject projects
-            |> Option.defaultValue "No Project"
-
-        printfn "%s" name
-
-        let dates =
-            te |> List.groupBy (fun te -> te.Start |> DateTime.Parse |> (fun d -> d.Date))
-
-        for date, te in dates do
-            printfn "%A" date
-
-            let duration =
-                te
-                |> List.sumBy (fun te -> te.Duration |> Option.ofNullable |> Option.defaultValue 0)
-
-            let zz = duration |> float |> TimeSpan.FromSeconds
-            printfn "%A" zz
-
-    []
+    timeEntries
+    |> List.groupBy (fun te -> te.ProjectId)
+    |> List.collect (fun (prjId, te) ->
+        te
+        |> List.groupBy (fun te ->
+            te.Start
+            |> (fun d -> DateTime.Parse(d, CultureInfo.InvariantCulture))
+            |> (fun d -> d.Date))
+        |> List.map (fun (date, te) ->
+            { ProjectName = getProjectName prjId
+              Date = DateOnly.FromDateTime(date)
+              Duration = getDuration te }))
 
 let getTimeEntries (client: TogglClient) (date: DateTime) =
     let startDate = DateTime(date.Year, date.Month, 1)
@@ -73,7 +50,7 @@ let getTimeEntries (client: TogglClient) (date: DateTime) =
 
     let res = x projects timeEntries
 
-    []
+    res
 // timeEntries
 // |> List.map (fun te ->
 //     { Date = DateOnly.FromDateTime(DateTime.Parse(te.Start, CultureInfo.InvariantCulture))
