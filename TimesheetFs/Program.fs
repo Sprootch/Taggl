@@ -6,6 +6,8 @@ open Toggl.Api
 open FSharp.SystemCommandLine
 open Timesheet
 open Excel
+open Spectre.Console
+open FsSpectre
 
 let settings =
     ConfigurationBuilder()
@@ -27,9 +29,25 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let startDate = DateTime(date.Year, date.Month, 1)
     let generateExcel = generateExcel outputDir startDate
 
-    printfn $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
+    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ...""")
+    let status = AnsiConsole.Status()
+    status.Spinner <- Spinner.Known.Star
+    status.SpinnerStyle <- Style.Parse("green")
+    status.Start("desc", (fun ctx ->
+            ctx.Status <- "Fetching time entries from Toggl"
+            let te = date |> getTimeEntries
+            // Threading.Thread.Sleep 1000
+            ctx.Status <- "Generating Excel file"
+            te |> generateExcel |> openFile
+            ))
+    AnsiConsole.MarkupLine("Done !")
 
-    date |> getTimeEntries |> generateExcel |> openFile
+// status {
+//     label $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
+//     date |> getTimeEntries |> generateExcel |> openFile
+// } |> AnsiConsole.Write
+// printfn $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
+
 
 [<EntryPoint>]
 let main argv =
