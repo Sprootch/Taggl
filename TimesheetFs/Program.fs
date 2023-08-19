@@ -17,13 +17,7 @@ let settings =
 let client = TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
-// TODO:
-// Try to go with real Actiris template.
-// Verbose param to debug print ?
-let getSpinner =
-    match DateTime.Today.Month with
-    | 1 | 12 -> Spinner.Known.Christmas
-    | _ -> Spinner.Known.BouncingBar
+// TODO: Try to go with real Actiris template.
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
@@ -35,29 +29,25 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
 
     let status = AnsiConsole.Status()
     status.SpinnerStyle <- Style.Parse("blue")
-    status.Spinner <- getSpinner
+
+    status.Spinner <-
+        match DateTime.Today.Month with
+        | 1
+        | 12 -> Spinner.Known.Christmas
+        | _ -> Spinner.Known.BouncingBar
 
     status.Start(
-        "Generating Timesheet",
+        "Fetching time entries from [bold red]Toggl[/]",
         (fun ctx ->
-            ctx.Status <- "Fetching time entries from [bold red]Toggl[/]..."
-            let te = date |> getTimeEntries
+            let timeEntries = date |> getTimeEntries
             // Threading.Thread.Sleep 3000
-            ctx.Status <- "Generating [bold green]Excel[/] file..."
+            ctx.Status <- "Generating [bold green]Excel[/] file"
             // Threading.Thread.Sleep 3000
-            let excel = te |> generateExcel
+            let excel = timeEntries |> generateExcel
             excel |> openFile)
     )
 
     AnsiConsole.MarkupLine($"File generated in {outputDir}")
-// Console.ReadKey() |> ignore
-
-// status {
-//     label $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
-//     date |> getTimeEntries |> generateExcel |> openFile
-// } |> AnsiConsole.Write
-// printfn $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
-
 
 [<EntryPoint>]
 let main argv =
