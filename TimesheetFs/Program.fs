@@ -1,13 +1,12 @@
-﻿open System
+﻿open Excel
+open FSharp.SystemCommandLine
+open Microsoft.Extensions.Configuration
+open Spectre.Console
+open System
 open System.Globalization
 open System.IO
-open Microsoft.Extensions.Configuration
-open Toggl.Api
-open FSharp.SystemCommandLine
 open Timesheet
-open Excel
-open Spectre.Console
-open FsSpectre
+open Toggl.Api
 
 let settings =
     ConfigurationBuilder()
@@ -21,7 +20,10 @@ let getTimeEntries = getTimeEntries client
 // TODO:
 // Try to go with real Actiris template.
 // Verbose param to debug print ?
-// Spectre.Console
+let getSpinner =
+    match DateTime.Today.Month with
+    | 1 | 12 -> Spinner.Known.Christmas
+    | _ -> Spinner.Known.BouncingBar
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
@@ -29,18 +31,26 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let startDate = DateTime(date.Year, date.Month, 1)
     let generateExcel = generateExcel outputDir startDate
 
-    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ...""")
+    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
+
     let status = AnsiConsole.Status()
-    status.Spinner <- Spinner.Known.Star
-    status.SpinnerStyle <- Style.Parse("green")
-    status.Start("desc", (fun ctx ->
-            ctx.Status <- "Fetching time entries from Toggl"
+    status.SpinnerStyle <- Style.Parse("blue")
+    status.Spinner <- getSpinner
+
+    status.Start(
+        "Generating Timesheet",
+        (fun ctx ->
+            ctx.Status <- "Fetching time entries from [bold red]Toggl[/]..."
             let te = date |> getTimeEntries
-            // Threading.Thread.Sleep 1000
-            ctx.Status <- "Generating Excel file"
-            te |> generateExcel |> openFile
-            ))
-    AnsiConsole.MarkupLine("Done !")
+            // Threading.Thread.Sleep 3000
+            ctx.Status <- "Generating [bold green]Excel[/] file..."
+            // Threading.Thread.Sleep 3000
+            let excel = te |> generateExcel
+            excel |> openFile)
+    )
+
+    AnsiConsole.MarkupLine($"File generated in {outputDir}")
+// Console.ReadKey() |> ignore
 
 // status {
 //     label $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} in {outputDir} ..."""
