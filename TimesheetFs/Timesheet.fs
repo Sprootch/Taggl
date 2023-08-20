@@ -14,7 +14,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         projects
         |> List.tryFind (fun prj -> prj.Id = id)
         |> Option.map (fun prj -> prj.Name)
-        |> Option.defaultValue "No Project"
+        |> Option.defaultValue "No project"
 
     let getDuration(te: TimeEntry list) =
         let roundSeconds(ts: TimeSpan) =
