@@ -42,7 +42,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
       for date in dates do
           Cell
               [ String(date.ToString("dd/MM"))
-                CellSize(ColWidth 10)
+                CellSize(ColWidth 08)
                 FontEmphasis Bold
                 if (date |> IsWeekend) then
                     BackgroundColor grey ]
@@ -100,5 +100,4 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
 let openFile(filename: string) =
     let psi = ProcessStartInfo(filename)
     psi.UseShellExecute <- true
-    let proc = Process.Start(psi)
-    proc.WaitForExit()
+    Process.Start(psi) |> ignore

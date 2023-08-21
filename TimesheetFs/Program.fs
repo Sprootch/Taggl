@@ -18,6 +18,7 @@ let client = TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
 // TODO: Try to go with real Actiris template.
+// Icon
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
@@ -53,6 +54,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
 let main argv =
     if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
         printfn "Please provide the Toggl api key in appsettings.json"
+        Console.ReadKey() |> ignore
         exit -1
 
     rootCommand argv {

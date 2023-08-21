@@ -30,6 +30,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         |> roundSeconds
 
     timeEntries
+    |> List.filter (fun te -> String.IsNullOrWhiteSpace(te.Stop) |> not)
     |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
     |> List.collect (fun (prjId, te) ->
         te
