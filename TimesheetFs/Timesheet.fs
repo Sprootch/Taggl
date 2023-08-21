@@ -10,9 +10,9 @@ let valueOrDefault(value: Nullable<int64>) =
     value |> Option.ofNullable |> Option.defaultValue 0
 
 let private transform (projects: Project list) (timeEntries: TimeEntry list) =
-    let getProjectName id =
+    let getProjectName (id:int64) =
         projects
-        |> List.tryFind (fun prj -> prj.Id = id)
+        |> List.tryFind (fun prj -> prj.Id = Nullable<int64> id)
         |> Option.map (fun prj -> prj.Name)
         |> Option.defaultValue "No project"
 
