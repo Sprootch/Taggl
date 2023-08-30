@@ -11,6 +11,10 @@ open Types
 [<Literal>]
 let TimeFormat = "h \h mm"
 
+module Color =
+    let grey = XLColor.FromArgb(0, 169, 169, 169)
+    let red = XLColor.FromArgb(0, 255, 0, 0)
+    
 let private IsWeekend(date: DateOnly) =
     match date.DayOfWeek with
     | DayOfWeek.Saturday
@@ -29,8 +33,6 @@ let generateDates(startDate: System.DateTime) =
     |> Seq.map DateOnly.FromDateTime
 
 let generateExcel (path: string) (date: System.DateTime) timeEntries =
-    let grey = XLColor.FromArgb(0, 169, 169, 169)
-    let red = XLColor.FromArgb(0, 255, 0, 0)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList
     let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort)
@@ -46,7 +48,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
                 CellSize(ColWidth 08)
                 FontEmphasis Bold
                 if (date |> IsWeekend) then
-                    BackgroundColor grey ]
+                    BackgroundColor Color.grey ]
 
       Go NewRow
       Go(Indent 1)
@@ -57,11 +59,11 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
                 CellSize(ColWidth 25)
                 FontEmphasis Bold
                 if projectName = Timesheet.NoProject then
-                    FontColor red ]
+                    FontColor Color.red ]
 
           for date in dates do
               if (date |> IsWeekend) then
-                  Cell [ BackgroundColor grey ]
+                  Cell [ BackgroundColor Color.grey ]
               else
                   match te |> List.tryFind (fun te -> te.Date = date) with
                   | None -> Cell []
@@ -73,7 +75,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
       // Empty line before sum
       for date in dates do
           if (date |> IsWeekend) then
-              Cell [ BackgroundColor grey ]
+              Cell [ BackgroundColor Color.grey ]
           else
               Cell []
       Go NewRow
@@ -81,7 +83,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
 
       for idx, date in dates |> List.indexed do
           if (date |> IsWeekend) then
-              Cell [ BackgroundColor grey ]
+              Cell [ BackgroundColor Color.grey ]
           else
               let duration =
                   timeEntries
