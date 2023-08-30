@@ -30,6 +30,7 @@ let generateDates(startDate: System.DateTime) =
 
 let generateExcel (path: string) (date: System.DateTime) timeEntries =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
+    let red = XLColor.FromArgb(0, 255, 0, 0)
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList
     let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort)
@@ -51,7 +52,12 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
       Go(Indent 1)
 
       for projectName, te in projects do
-          Cell [ String projectName; CellSize(ColWidth 25); FontEmphasis Bold ]
+          Cell
+              [ String projectName
+                CellSize(ColWidth 25)
+                FontEmphasis Bold
+                if projectName = Timesheet.NoProject then
+                    FontColor red ]
 
           for date in dates do
               if (date |> IsWeekend) then

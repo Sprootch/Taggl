@@ -10,8 +10,8 @@
     <ItemGroup>
         <Compile Include="Types.fs" />
         <Compile Include="Toggl.Api.fs" />
-        <Compile Include="Excel.fs" />
         <Compile Include="Timesheet.fs" />
+        <Compile Include="Excel.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
