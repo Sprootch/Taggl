@@ -48,7 +48,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
 
 let getTimeEntries (client: TogglClient) (date: DateTime) =
     let startDate = DateTime(date.Year, date.Month, 1)
-    let endDate = startDate.AddMonths(1).AddDays(-1)
+    let endDate = startDate.AddMonths(1).AddSeconds(-1)
 
     let projects = TogglApi.getProjects client |> Async.RunSynchronously
 
