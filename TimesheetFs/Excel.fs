@@ -81,6 +81,8 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
       Go NewRow
       Go(Indent 2)
 
+      FreezePanes FirstColumn 
+      
       for idx, date in dates |> List.indexed do
           if (date |> IsWeekend) then
               Cell [ BackgroundColor Color.grey ]
