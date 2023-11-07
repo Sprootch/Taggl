@@ -32,6 +32,22 @@ let generateDates(startDate: System.DateTime) =
             None)
     |> Seq.map DateOnly.FromDateTime
 
+let generateExcelFromTemplate (path: string) (date: System.DateTime) timeEntries =
+    let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
+    let workbook = new XLWorkbook(Path.Combine(path, "Timesheet-Template-v10.xlsx"))
+    [
+        Workbook workbook
+        Worksheet "Configuration"
+        Go(RC(13,4))
+        Cell [ DateTime (System.DateTime(2023, 11, 1)) ]
+        
+        Worksheet "Prestations"
+        Go(RC(13,4))
+        Cell [ TimeSpan (TimeSpan.FromHours(8)); FormatCode TimeFormat ]
+    ] |> Render.AsFile savePath
+    
+    savePath
+    
 let generateExcel (path: string) (date: System.DateTime) timeEntries =
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList

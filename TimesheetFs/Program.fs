@@ -24,7 +24,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
     let startDate = DateTime(date.Year, date.Month, 1)
-    let generateExcel = generateExcel outputDir startDate
+    let generateExcel = generateExcelFromTemplate outputDir startDate
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 
