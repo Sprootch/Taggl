@@ -20,18 +20,14 @@ let generateExcelFromTemplate path date (timeEntries: MyTimeEntry list) =
 
     let prestations = package.Workbook.Worksheets["Prestations"]
 
-    let excelColumns =
-        [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF"; "AH"; "AG" ]
-        |> List.append ([ 'D' .. 'Z' ] |> List.map string)
-
     let mutable row = 7
-    for projectName, te in projects do
-        for i, date in dates |> List.indexed do
-            match te |> List.tryFind (fun te -> te.Date = date) with
-            | None -> ()
-            | Some item ->
-                let col = excelColumns[i]
-                prestations.Cells[$"{col}{row}"].Value <- item.Duration
+
+    for _, timeEntries in projects do
+        for col, date in dates |> List.indexed do
+            timeEntries
+            |> List.tryFind (fun te -> te.Date = date)
+            |> Option.iter (fun item -> prestations.Cells[row, col + 4].Value <- item.Duration)
+
         row <- row + 1
 
     package.SaveAs(FileInfo(savePath))
