@@ -58,13 +58,11 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
     package
 
 let save path (package: ExcelPackage) =
-    let savePath = path |> FileInfo
-    package.SaveAs(savePath)
-    savePath
+    package.SaveAs(path |> FileInfo)
 
-let generateExcel path date timeEntries =
+let generateExcel outputFile date timeEntries =
     new ExcelPackage("Timesheet-Template-v10.xlsx")
     |> setupDate date
     |> setupProjects timeEntries
     |> addTimeEntries date timeEntries
-    |> save (Path.Combine(path, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx"))
+    |> save outputFile
