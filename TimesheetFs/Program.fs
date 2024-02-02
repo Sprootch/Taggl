@@ -24,7 +24,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
 
     let generateExcel =
-        EPPlusExcel.generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
+        Excel.generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 

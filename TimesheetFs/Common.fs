@@ -23,6 +23,8 @@ let generateDates(startDate: DateTime) =
             None)
     |> Seq.map DateOnly.FromDateTime
 
+let round (ts:TimeSpan) = TimeSpan.FromMinutes(Math.Round(ts.TotalMinutes / 15., 0, MidpointRounding.ToEven) * 15.)
+
 let roundSeconds(ts: TimeSpan) =
     if (ts.Seconds <= 30) then
         ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
