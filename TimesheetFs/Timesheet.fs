@@ -5,6 +5,7 @@ open System.Globalization
 open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
+open Common
 
 [<Literal>]
 let NoProject = "! No project !"
@@ -12,25 +13,17 @@ let NoProject = "! No project !"
 let valueOrDefault(value: Nullable<int64>) =
     value |> Option.ofNullable |> Option.defaultValue 0
 
+let private toTimespan = float >> TimeSpan.FromSeconds >> roundSeconds >> roundHours
+
 let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     let getProjectName(id: int64) =
         projects
         |> List.tryFind (fun prj -> prj.Id = Nullable<int64> id)
-        |> Option.map (fun prj -> prj.Name)
+        |> Option.map (_.Name)
         |> Option.defaultValue NoProject
 
     let getDuration(te: TimeEntry list) =
-        let roundSeconds(ts: TimeSpan) =
-            if (ts.Seconds <= 30) then
-                ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
-            else
-                ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
-
-        te
-        |> List.sumBy (fun te -> te.Duration |> valueOrDefault)
-        |> float
-        |> TimeSpan.FromSeconds
-        |> roundSeconds
+        te |> List.sumBy (fun te -> te.Duration |> valueOrDefault) |> toTimespan
 
     timeEntries
     |> List.filter (fun te -> String.IsNullOrWhiteSpace(te.Stop) |> not)
@@ -40,15 +33,15 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         |> List.groupBy (fun te ->
             te.Start
             |> (fun date -> DateTime.Parse(date, CultureInfo.InvariantCulture))
-            |> (fun date -> date.Date))
+            |> (_.Date))
         |> List.map (fun (date, te) ->
             { ProjectName = getProjectName prjId
               Date = DateOnly.FromDateTime(date)
               Duration = getDuration te }))
 
 let getTimeEntries (client: TogglClient) (date: DateTime) =
-    let startDate = DateTime(date.Year, date.Month, 1)
-    let endDate = startDate.AddMonths(1).AddSeconds(-1)
+    let startDate = date |> firstDayOfMonth
+    let endDate = startDate |> lastDayOfMonth
 
     let projects = TogglApi.getProjects client |> Async.RunSynchronously
 

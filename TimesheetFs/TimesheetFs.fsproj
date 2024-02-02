@@ -2,13 +2,15 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AssemblyName>Taggl</AssemblyName>
         <ApplicationIcon>etienne.ico</ApplicationIcon>
-    </PropertyGroup>
+      <UserSecretsId>e5ec099c-f0d8-49cf-8a1c-e3f0c5715645</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <Compile Include="Types.fs" />
+        <Compile Include="Common.fs" />
         <Compile Include="Toggl.Api.fs" />
         <Compile Include="Timesheet.fs" />
         <Compile Include="Excel.fs" />
@@ -16,12 +18,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="EPPlus" Version="7.0.8" />
       <PackageReference Include="FsExcel" Version="0.0.49" />
       <PackageReference Include="FSharp.SystemCommandLine" Version="0.17.0-beta4" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-      <PackageReference Include="Spectre.Console" Version="0.47.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+      <PackageReference Include="Spectre.Console" Version="0.48.0" />
       <PackageReference Include="Toggl.Api" Version="8.0.7" />
+      <PackageReference Update="FSharp.Core" Version="8.0.101" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,9 +35,11 @@
       </Content>
     </ItemGroup>
 
-
     <ItemGroup>
       <None Include="etienne.ico" />
+      <Content Include="Timesheet-Template-v10.xlsx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

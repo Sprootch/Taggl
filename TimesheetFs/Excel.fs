@@ -1,113 +1,34 @@
 ﻿module Excel
 
-open System
-open System.Diagnostics
+open OfficeOpenXml
 open System.IO
-open ClosedXML.Excel
-open FsExcel
-open Microsoft.FSharp.Core
 open Types
+open Common
 
-[<Literal>]
-let TimeFormat = "h \h mm"
+let getProjectRows(range: ExcelRange) =
+    [ for cell in range do
+          (cell.Value |> string, cell.Start.Row) ]
+    |> Map.ofList
 
-module Color =
-    let grey = XLColor.FromArgb(0, 169, 169, 169)
-    let red = XLColor.FromArgb(0, 255, 0, 0)
-    
-let private IsWeekend(date: DateOnly) =
-    match date.DayOfWeek with
-    | DayOfWeek.Saturday
-    | DayOfWeek.Sunday -> true
-    | _ -> false
+let generateExcel path date timeEntries =
+    let package = new ExcelPackage("Timesheet-Template-v10.xlsx")
+    package.Workbook.Worksheets["Configuration"].Cells["D13"].Value <- date
 
-let generateDates(startDate: System.DateTime) =
-    let endDate = startDate.AddMonths(1).AddDays(-1)
+    let prestations = package.Workbook.Worksheets["Prestations"]
 
-    startDate
-    |> Seq.unfold (fun date ->
-        if date <= endDate then
-            Some(date, date.AddDays(1.0))
-        else
-            None)
-    |> Seq.map DateOnly.FromDateTime
+    let days = date |> generateDaysOfMonth |> Seq.indexed
 
-let generateExcel (path: string) (date: System.DateTime) timeEntries =
-    let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
-    let dates = date |> generateDates |> Seq.toList
-    let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort)
+    prestations.Cells["C:C"]
+    |> getProjectRows
+    |> Map.iter (fun project row ->
+        for col, date in days do
+            timeEntries
+            |> List.tryFind (fun te -> te.Date = date && te.ProjectName = project)
+            |> Option.iter (fun timeEntry -> prestations.Cells[row, col + 4].Value <- timeEntry.Duration))
 
-    let excelColumns =
-        [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]
-        |> List.append ([ 'B' .. 'Z' ] |> List.map string)
+    let savePath =
+        Path.Combine(path, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx") |> FileInfo
 
-    [ Go(Indent 2)
-      for date in dates do
-          Cell
-              [ String(date.ToString("dd/MM"))
-                CellSize(ColWidth 08)
-                FontEmphasis Bold
-                if (date |> IsWeekend) then
-                    BackgroundColor Color.grey ]
-
-      Go NewRow
-      Go(Indent 1)
-
-      for projectName, te in projects do
-          Cell
-              [ String projectName
-                CellSize(ColWidth 25)
-                FontEmphasis Bold
-                if projectName = Timesheet.NoProject then
-                    FontColor Color.red ]
-
-          for date in dates do
-              if (date |> IsWeekend) then
-                  Cell [ BackgroundColor Color.grey ]
-              else
-                  match te |> List.tryFind (fun te -> te.Date = date) with
-                  | None -> Cell []
-                  | Some item -> Cell [ TimeSpan item.Duration; FormatCode TimeFormat ]
-
-          Go NewRow
-
-      Go(Indent 2)
-      // Empty line before sum
-      for date in dates do
-          if (date |> IsWeekend) then
-              Cell [ BackgroundColor Color.grey ]
-          else
-              Cell []
-      Go NewRow
-      Go(Indent 2)
-
-      FreezePanes FirstColumn 
-      
-      for idx, date in dates |> List.indexed do
-          if (date |> IsWeekend) then
-              Cell [ BackgroundColor Color.grey ]
-          else
-              let duration =
-                  timeEntries
-                  |> List.filter (fun te -> te.Date = date)
-                  |> List.sumBy (fun te -> te.Duration.TotalSeconds)
-                  |> TimeSpan.FromSeconds
-
-              if (duration = TimeSpan.Zero) then
-                  Cell []
-              else
-                  let column = excelColumns[idx]
-                  let sumEnd = 1 + (projects |> List.length)
-
-                  Cell
-                      [ FormulaA1 $"=SUM({column}2:{column}{sumEnd})"
-                        FormatCode TimeFormat
-                        FontEmphasis Bold ] ]
-    |> Render.AsFile(savePath)
+    package.SaveAs(savePath)
 
     savePath
-
-let openFile(filename: string) =
-    let psi = ProcessStartInfo(filename)
-    psi.UseShellExecute <- true
-    Process.Start(psi) |> ignore
