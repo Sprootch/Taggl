@@ -38,6 +38,9 @@
 
     <ItemGroup>
       <None Include="etienne.ico" />
+      <Content Include="Timesheet-Template-v10.xlsx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
