@@ -41,14 +41,10 @@ let setupDate date (package: ExcelPackage) =
     package.Workbook.Worksheets["Configuration"].Cells["D13"].Value <- date
     package
 
-let generateExcel path date timeEntries =
-    let package =
-        new ExcelPackage("Timesheet-Template-v10.xlsx")
-        |> setupDate date
-        |> setupProjects timeEntries
-
+let addTimeEntries date timeEntries (package: ExcelPackage) =
     let prestations = package.Workbook.Worksheets["Prestations"]
 
+    // TODO : get rid of date ?
     let days = date |> generateDaysOfMonth |> Seq.indexed
 
     prestations.Cells["C:C"]
@@ -59,9 +55,16 @@ let generateExcel path date timeEntries =
             |> List.tryFind (fun te -> te.Date = date && te.ProjectName = project)
             |> Option.iter (fun timeEntry -> prestations.Cells[row, col + 4].Value <- timeEntry.Duration))
 
-    let savePath =
-        Path.Combine(path, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx") |> FileInfo
+    package
 
+let save path (package: ExcelPackage) =
+    let savePath = path |> FileInfo
     package.SaveAs(savePath)
-
     savePath
+
+let generateExcel path date timeEntries =
+    new ExcelPackage("Timesheet-Template-v10.xlsx")
+    |> setupDate date
+    |> setupProjects timeEntries
+    |> addTimeEntries date timeEntries
+    |> save (Path.Combine(path, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx"))
