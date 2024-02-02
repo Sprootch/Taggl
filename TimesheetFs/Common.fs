@@ -4,6 +4,7 @@ open System
 open System.Diagnostics
 
 let firstDayOfMonth(date: DateTime) = DateTime(date.Year, date.Month, 1)
+let lastDayOfMonth(date: DateTime) = date.AddMonths(1).AddSeconds(-1)
 
 let isWeekend(date: DateOnly) =
     match date.DayOfWeek with
@@ -21,7 +22,21 @@ let generateDates(startDate: DateTime) =
         else
             None)
     |> Seq.map DateOnly.FromDateTime
-    
+
+let roundSeconds(ts: TimeSpan) =
+    if (ts.Seconds <= 30) then
+        ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
+    else
+        ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
+
+let roundHours(ts: TimeSpan) =
+    if (ts.Hours = 8) then
+        TimeSpan.FromHours(8)
+    else if (ts.Add(TimeSpan.FromMinutes(10)).Hours = 8) then
+        TimeSpan.FromHours(8)
+    else
+        ts
+
 let openFile(filename: string) =
     let psi = ProcessStartInfo(filename)
     psi.UseShellExecute <- true

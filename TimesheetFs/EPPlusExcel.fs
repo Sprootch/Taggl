@@ -5,7 +5,7 @@ open System.IO
 open Types
 open Common
 
-// TODO : around 8h +- 10mn = 8h
+// TODO : 
 // find project row
 // utiliser user secret
 
