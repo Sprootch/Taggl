@@ -7,23 +7,24 @@ open System
 open System.Globalization
 open System.IO
 open Timesheet
-open Common 
+open Common
 
 let settings =
     ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", false)
+        .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
         .Build()
 
-let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"]) // Read from user secrets
+let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
-
-// TODO: Try to go with real Actiris template.
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
-    let generateExcel = EPPlusExcel.generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
+
+    let generateExcel =
+        EPPlusExcel.generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 
@@ -52,7 +53,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
 [<EntryPoint>]
 let main argv =
     if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
-        printfn "Please provide the Toggl api key in appsettings.json"
+        printfn "Please add the Toggl api key (Toggl:ApiKey) in user secrets"
         Console.ReadKey() |> ignore
         exit -1
 
