@@ -7,6 +7,7 @@ open ClosedXML.Excel
 open FsExcel
 open Microsoft.FSharp.Core
 open Types
+open Common
 
 [<Literal>]
 let TimeFormat = "h \h mm"
@@ -14,40 +15,7 @@ let TimeFormat = "h \h mm"
 module Color =
     let grey = XLColor.FromArgb(0, 169, 169, 169)
     let red = XLColor.FromArgb(0, 255, 0, 0)
-    
-let private IsWeekend(date: DateOnly) =
-    match date.DayOfWeek with
-    | DayOfWeek.Saturday
-    | DayOfWeek.Sunday -> true
-    | _ -> false
 
-let generateDates(startDate: System.DateTime) =
-    let endDate = startDate.AddMonths(1).AddDays(-1)
-
-    startDate
-    |> Seq.unfold (fun date ->
-        if date <= endDate then
-            Some(date, date.AddDays(1.0))
-        else
-            None)
-    |> Seq.map DateOnly.FromDateTime
-
-let generateExcelFromTemplate (path: string) (date: System.DateTime) timeEntries =
-    let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
-    let workbook = new XLWorkbook(Path.Combine(path, "Timesheet-Template-v10.xlsx"))
-    [
-        Workbook workbook
-        Worksheet "Configuration"
-        Go(RC(13,4))
-        Cell [ DateTime date ]
-        
-        Worksheet "Prestations"
-        Go(RC(13,4))
-        Cell [ TimeSpan (TimeSpan.FromHours(8)); FormatCode TimeFormat ]
-    ] |> Render.AsFile savePath
-    
-    savePath
-    
 let generateExcel (path: string) (date: System.DateTime) timeEntries =
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList
@@ -63,7 +31,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
               [ String(date.ToString("dd/MM"))
                 CellSize(ColWidth 08)
                 FontEmphasis Bold
-                if (date |> IsWeekend) then
+                if (date |> isWeekend) then
                     BackgroundColor Color.grey ]
 
       Go NewRow
@@ -78,7 +46,7 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
                     FontColor Color.red ]
 
           for date in dates do
-              if (date |> IsWeekend) then
+              if (date |> isWeekend) then
                   Cell [ BackgroundColor Color.grey ]
               else
                   match te |> List.tryFind (fun te -> te.Date = date) with
@@ -90,17 +58,17 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
       Go(Indent 2)
       // Empty line before sum
       for date in dates do
-          if (date |> IsWeekend) then
+          if (date |> isWeekend) then
               Cell [ BackgroundColor Color.grey ]
           else
               Cell []
       Go NewRow
       Go(Indent 2)
 
-      FreezePanes FirstColumn 
-      
+      FreezePanes FirstColumn
+
       for idx, date in dates |> List.indexed do
-          if (date |> IsWeekend) then
+          if (date |> isWeekend) then
               Cell [ BackgroundColor Color.grey ]
           else
               let duration =
@@ -122,8 +90,3 @@ let generateExcel (path: string) (date: System.DateTime) timeEntries =
     |> Render.AsFile(savePath)
 
     savePath
-
-let openFile(filename: string) =
-    let psi = ProcessStartInfo(filename)
-    psi.UseShellExecute <- true
-    Process.Start(psi) |> ignore

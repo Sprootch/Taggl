@@ -1,14 +1,13 @@
 ﻿module Program
 
-open Excel
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
+open OfficeOpenXml
 open Spectre.Console
 open System
 open System.Globalization
 open System.IO
 open Timesheet
-open Toggl.Api
 open Common 
 
 let settings =
@@ -17,17 +16,15 @@ let settings =
         .AddJsonFile("appsettings.json", false)
         .Build()
 
-let client = TogglClient(settings["Toggl:ApiKey"])
+let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"]) // Read from user secrets
 let getTimeEntries = getTimeEntries client
 
 // TODO: Try to go with real Actiris template.
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
-    let x = Environment.UserName
-    let xx = Environment.UserDomainName
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
-    let generateExcel = generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
+    let generateExcel = EPPlusExcel.generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 
@@ -55,6 +52,8 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
 
 [<EntryPoint>]
 let main argv =
+    ExcelPackage.LicenseContext <- LicenseContext.NonCommercial
+    
     if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
         printfn "Please provide the Toggl api key in appsettings.json"
         Console.ReadKey() |> ignore
