@@ -19,7 +19,7 @@ module Color =
 let generateExcel (path: string) (date: System.DateTime) timeEntries =
     let savePath = Path.Combine(path, $"TS-{date:yyyyMM}.xlsx")
     let dates = date |> generateDates |> Seq.toList
-    let projects = (timeEntries |> List.groupBy (fun te -> te.ProjectName) |> List.sort)
+    let projects = (timeEntries |> List.groupBy (_.ProjectName) |> List.sort)
 
     let excelColumns =
         [ "AA"; "AB"; "AC"; "AD"; "AE"; "AF" ]

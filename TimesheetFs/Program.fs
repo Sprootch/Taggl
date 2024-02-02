@@ -2,7 +2,6 @@
 
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
-open OfficeOpenXml
 open Spectre.Console
 open System
 open System.Globalization
@@ -52,8 +51,6 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
 
 [<EntryPoint>]
 let main argv =
-    ExcelPackage.LicenseContext <- LicenseContext.NonCommercial
-    
     if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
         printfn "Please provide the Toggl api key in appsettings.json"
         Console.ReadKey() |> ignore
