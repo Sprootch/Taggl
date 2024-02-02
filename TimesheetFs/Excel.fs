@@ -29,19 +29,13 @@ let filterSpecialProjects =
 let setupProjects timeEntries (package: ExcelPackage) =
     let prestations = package.Workbook.Worksheets["Prestations"]
 
-    let projectCodes =
-        timeEntries
-        |> List.groupBy (_.ProjectName)
-        |> List.filter (fun (name, _) -> filterSpecialProjects name)
-        |> List.map (fun (name, _) -> (name, findProjectCode package name))
-
-    let mutable row = 7
-
-    for name, code in projectCodes do
-        prestations.Cells[row, 2].Value <- code
-        prestations.Cells[row, 3].Value <- name
-
-        row <- row + 1
+    timeEntries
+    |> List.groupBy (_.ProjectName)
+    |> List.filter (fun (name, _) -> filterSpecialProjects name)
+    |> List.map (fun (name, _) -> (name, findProjectCode package name))
+    |> List.iteri (fun row (name, code) ->
+        prestations.Cells[row + 7, 2].Value <- code
+        prestations.Cells[row + 7, 3].Value <- name)
 
     package
 
