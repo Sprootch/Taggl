@@ -5,10 +5,22 @@ open System.IO
 open Types
 open Common
 
+// todo : add dynamically the projects.
+// gérer autre
+
 let getProjectRows(range: ExcelRange) =
-    [ for cell in range do
-          (cell.Value |> string, cell.Start.Row) ]
-    |> Map.ofList
+    range
+    |> Seq.map (fun cell -> (cell.Value |> string, cell.Start.Row))
+    |> Map.ofSeq
+
+let findProjectCode (package: ExcelPackage) name =
+    let projectsSheet = package.Workbook.Worksheets["Codes projet"]
+    let range = projectsSheet.Cells["B:B"]
+
+    range
+    |> Seq.tryFind (fun cell -> cell.Value = name)
+    |> Option.map (fun cell -> projectsSheet.Cells[cell.Start.Row, 1].Value)
+    |> Option.defaultValue "AUTRE"
 
 let generateExcel path date timeEntries =
     let package = new ExcelPackage("Timesheet-Template-v10.xlsx")
