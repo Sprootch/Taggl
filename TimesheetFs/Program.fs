@@ -1,4 +1,6 @@
-﻿open Excel
+﻿module Program
+
+open Excel
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
 open Spectre.Console
@@ -7,6 +9,7 @@ open System.Globalization
 open System.IO
 open Timesheet
 open Toggl.Api
+open Common 
 
 let settings =
     ConfigurationBuilder()
@@ -18,13 +21,13 @@ let client = TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
 // TODO: Try to go with real Actiris template.
-// Icon
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
+    let x = Environment.UserName
+    let xx = Environment.UserDomainName
     let outputDir = defaultArg outputDirMaybe @"C:\temp"
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
-    let startDate = DateTime(date.Year, date.Month, 1)
-    let generateExcel = generateExcelFromTemplate outputDir startDate
+    let generateExcel = generateExcelFromTemplate outputDir (date |> firstDayOfMonth)
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 

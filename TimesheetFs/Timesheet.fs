@@ -16,7 +16,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     let getProjectName(id: int64) =
         projects
         |> List.tryFind (fun prj -> prj.Id = Nullable<int64> id)
-        |> Option.map (fun prj -> prj.Name)
+        |> Option.map (_.Name)
         |> Option.defaultValue NoProject
 
     let getDuration(te: TimeEntry list) =
@@ -40,14 +40,14 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         |> List.groupBy (fun te ->
             te.Start
             |> (fun date -> DateTime.Parse(date, CultureInfo.InvariantCulture))
-            |> (fun date -> date.Date))
+            |> (_.Date))
         |> List.map (fun (date, te) ->
             { ProjectName = getProjectName prjId
               Date = DateOnly.FromDateTime(date)
               Duration = getDuration te }))
 
 let getTimeEntries (client: TogglClient) (date: DateTime) =
-    let startDate = DateTime(date.Year, date.Month, 1)
+    let startDate = date |> Common.firstDayOfMonth
     let endDate = startDate.AddMonths(1).AddSeconds(-1)
 
     let projects = TogglApi.getProjects client |> Async.RunSynchronously

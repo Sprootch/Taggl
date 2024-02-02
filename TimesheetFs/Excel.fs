@@ -39,7 +39,7 @@ let generateExcelFromTemplate (path: string) (date: System.DateTime) timeEntries
         Workbook workbook
         Worksheet "Configuration"
         Go(RC(13,4))
-        Cell [ DateTime (System.DateTime(2023, 11, 1)) ]
+        Cell [ DateTime date ]
         
         Worksheet "Prestations"
         Go(RC(13,4))
