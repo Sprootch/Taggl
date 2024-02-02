@@ -24,7 +24,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
     let outputFile = Path.Combine(outputDir, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx")
 
-    let generateExcel = Excel.generateExcel outputFile (date |> firstDayOfMonth)
+    let generateExcel = Excel.generateExcel outputFile date
 
     AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
 
@@ -46,7 +46,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             outputFile |> openFile)
     )
 
-    AnsiConsole.MarkupLine($"File generated in {outputDir}")
+    AnsiConsole.MarkupLine($"File {outputFile} generated.")
 
 [<EntryPoint>]
 let main argv =

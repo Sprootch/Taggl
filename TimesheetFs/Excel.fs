@@ -1,5 +1,6 @@
 ﻿module Excel
 
+open System
 open OfficeOpenXml
 open System.IO
 open Types
@@ -60,7 +61,9 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
 let save path (package: ExcelPackage) =
     package.SaveAs(path |> FileInfo)
 
-let generateExcel outputFile date timeEntries =
+let generateExcel outputFile (date:DateTime) timeEntries =
+    let date = date |> firstDayOfMonth
+    
     new ExcelPackage("Timesheet-Template-v10.xlsx")
     |> setupDate date
     |> setupProjects timeEntries

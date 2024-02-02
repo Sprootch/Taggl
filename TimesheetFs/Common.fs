@@ -2,9 +2,9 @@
 
 open System
 open System.Diagnostics
-open System.IO
 
 let firstDayOfMonth(date: DateTime) = DateTime(date.Year, date.Month, 1)
+
 let lastDayOfMonth(date: DateTime) = date.AddMonths(1).AddSeconds(-1)
 
 let isWeekend(date: DateOnly) =
@@ -14,7 +14,7 @@ let isWeekend(date: DateOnly) =
     | _ -> false
 
 let generateDaysOfMonth(startDate: DateTime) =
-    let endDate = startDate.AddMonths(1).AddDays(-1)
+    let endDate = startDate |> lastDayOfMonth |> (_.Date)
 
     startDate
     |> Seq.unfold (fun date ->
