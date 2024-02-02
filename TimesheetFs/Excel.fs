@@ -20,12 +20,19 @@ let findProjectCode (package: ExcelPackage) (name: string) =
     |> Option.map (fun cell -> projectsSheet.Cells[cell.Start.Row, 1].Value |> string)
     |> Option.defaultValue "AUTRE"
 
+let filterSpecialProjects =
+    function
+    | "Jour férié"
+    | "Congé ou fermeture" -> false
+    | _ -> true
+
 let setupProjects timeEntries (package: ExcelPackage) =
     let prestations = package.Workbook.Worksheets["Prestations"]
 
     let projectCodes =
         timeEntries
         |> List.groupBy (_.ProjectName)
+        |> List.filter (fun (name, _) -> filterSpecialProjects name)
         |> List.map (fun (name, _) -> (name, findProjectCode package name))
 
     let mutable row = 7
@@ -58,12 +65,11 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
 
     package
 
-let save path (package: ExcelPackage) =
-    package.SaveAs(path |> FileInfo)
+let save path (package: ExcelPackage) = package.SaveAs(path |> FileInfo)
 
-let generateExcel outputFile (date:DateTime) timeEntries =
+let generateExcel outputFile (date: DateTime) timeEntries =
     let date = date |> firstDayOfMonth
-    
+
     new ExcelPackage("Timesheet-Template-v10.xlsx")
     |> setupDate date
     |> setupProjects timeEntries
