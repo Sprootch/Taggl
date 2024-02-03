@@ -5,7 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <AssemblyName>Taggl</AssemblyName>
         <ApplicationIcon>etienne.ico</ApplicationIcon>
-      <UserSecretsId>e5ec099c-f0d8-49cf-8a1c-e3f0c5715645</UserSecretsId>
+        <UserSecretsId>e5ec099c-f0d8-49cf-8a1c-e3f0c5715645</UserSecretsId>
+        <NoWarn>3391</NoWarn>
   </PropertyGroup>
 
     <ItemGroup>

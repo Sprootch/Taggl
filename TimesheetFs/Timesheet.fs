@@ -14,9 +14,9 @@ let valueOrDefault = Option.ofNullable >> Option.defaultValue 0L
 let private toTimespan = float >> TimeSpan.FromSeconds >> roundSeconds >> roundHours
 
 let private transform (projects: Project list) (timeEntries: TimeEntry list) =
-    let getProjectName(id: int64) =
+    let getProjectName id =
         projects
-        |> List.tryFind (fun prj -> prj.Id = Nullable<int64> id)
+        |> List.tryFind (fun prj -> prj.Id = id)
         |> Option.map (_.Name)
         |> Option.defaultValue NoProject
 
@@ -26,14 +26,14 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     timeEntries
     |> List.filter (fun te -> String.IsNullOrWhiteSpace(te.Stop) |> not)
     |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
-    |> List.collect (fun (prjId, te) ->
+    |> List.collect (fun (prId, te) ->
         te
         |> List.groupBy (fun te ->
             te.Start
             |> (fun date -> DateTime.Parse(date, CultureInfo.InvariantCulture))
             |> (_.Date))
         |> List.map (fun (date, te) ->
-            { ProjectName = getProjectName prjId
+            { ProjectName = getProjectName prId
               Date = DateOnly.FromDateTime(date)
               Duration = getDuration te }))
 
