@@ -2,7 +2,6 @@
 
 open System
 open System.Globalization
-open Toggl.Api
 open Toggl.Api.DataObjects
 open Types
 open Common
@@ -10,8 +9,7 @@ open Common
 [<Literal>]
 let NoProject = "! No project !"
 
-let valueOrDefault(value: Nullable<int64>) =
-    value |> Option.ofNullable |> Option.defaultValue 0
+let valueOrDefault = Option.ofNullable >> Option.defaultValue 0L
 
 let private toTimespan = float >> TimeSpan.FromSeconds >> roundSeconds >> roundHours
 
@@ -39,7 +37,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
               Date = DateOnly.FromDateTime(date)
               Duration = getDuration te }))
 
-let getTimeEntries (client: TogglClient) (date: DateTime) =
+let getTimeEntries client date =
     let startDate = date |> firstDayOfMonth
     let endDate = startDate |> lastDayOfMonth
 
