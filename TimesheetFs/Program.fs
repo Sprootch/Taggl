@@ -20,13 +20,13 @@ let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"])
 let getTimeEntries = getTimeEntries client
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
-    let outputDir = defaultArg outputDirMaybe @"C:\temp"
+    let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
+    let outputFile = Path.Combine(outputDir, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx")
 
-    let generateExcel =
-        Excel.generateExcel outputDir (date |> firstDayOfMonth)
+    let generateExcel = Excel.generateExcel outputFile date
 
-    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)}""")
+    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}""")
 
     let status = AnsiConsole.Status()
     status.SpinnerStyle <- Style.Parse("blue")
@@ -41,14 +41,12 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
         "Fetching time entries from [bold red]Toggl[/]",
         (fun ctx ->
             let timeEntries = date |> getTimeEntries
-            // Threading.Thread.Sleep 3000
             ctx.Status <- "Generating [bold green]Excel[/] file"
-            // Threading.Thread.Sleep 3000
-            let excel = timeEntries |> generateExcel
-            excel |> openFile)
+            timeEntries |> generateExcel
+            outputFile |> openFile)
     )
 
-    AnsiConsole.MarkupLine($"File generated in {outputDir}")
+    AnsiConsole.MarkupLine($"File {outputFile} generated.")
 
 [<EntryPoint>]
 let main argv =
