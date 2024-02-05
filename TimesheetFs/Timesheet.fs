@@ -26,14 +26,14 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     timeEntries
     |> List.filter (fun te -> String.IsNullOrWhiteSpace(te.Stop) |> not)
     |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
-    |> List.collect (fun (prId, te) ->
+    |> List.collect (fun (prjId, te) ->
         te
         |> List.groupBy (fun te ->
             te.Start
             |> (fun date -> DateTime.Parse(date, CultureInfo.InvariantCulture))
             |> (_.Date))
         |> List.map (fun (date, te) ->
-            { ProjectName = getProjectName prId
+            { ProjectName = getProjectName prjId
               Date = DateOnly.FromDateTime(date)
               Duration = getDuration te }))
 

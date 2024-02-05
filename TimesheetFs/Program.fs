@@ -9,6 +9,10 @@ open System.IO
 open Timesheet
 open Common
 
+// TODO:
+// - Set :Thread & ThreadUI
+// open Mail template
+// translation
 let settings =
     ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
