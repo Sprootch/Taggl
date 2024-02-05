@@ -14,9 +14,9 @@ let valueOrDefault = Option.ofNullable >> Option.defaultValue 0L
 let private toTimespan = float >> TimeSpan.FromSeconds >> roundSeconds >> roundHours
 
 let private transform (projects: Project list) (timeEntries: TimeEntry list) =
-    let getProjectName(id: int64) =
+    let getProjectName id =
         projects
-        |> List.tryFind (fun prj -> prj.Id = Nullable<int64> id)
+        |> List.tryFind (fun prj -> prj.Id = id)
         |> Option.map (_.Name)
         |> Option.defaultValue NoProject
 

@@ -24,12 +24,12 @@ let setupProjects timeEntries (package: ExcelPackage) =
     timeEntries
     |> List.map (_.ProjectName)
     |> List.distinct
-    |> List.filter (fun name -> isBillable name)
+    |> List.filter isBillable
     |> List.map (fun name -> (name, name |> getProjectCode))
     |> List.iteri (fun row (name, code) ->
         let prestations = package.Workbook.Worksheets["Prestations"]
-        prestations.Cells[row + 7, 2].Value <- code
-        prestations.Cells[row + 7, 3].Value <- name)
+        prestations.Cells[7 + row, 2].Value <- code
+        prestations.Cells[7 + row, 3].Value <- name)
 
     package
 
@@ -42,16 +42,12 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
 
     let days = date |> generateDaysOfMonth |> Seq.indexed
 
-    let projectRows =
-        prestations.Cells["C:C"]
-        |> Seq.map (fun cell -> (cell.Value |> string, cell.Start.Row))
-        |> Map.ofSeq
-
-    projectRows
-    |> Map.iter (fun project row ->
+    prestations.Cells["C:C"] // colonne Intitulé
+    |> Seq.map (fun cell -> (cell.Value |> string, cell.Start.Row))
+    |> Seq.iter (fun (project, row) ->
         for col, date in days do
             timeEntries
-            |> List.tryFind (fun te -> te.Date = date && te.ProjectName = project)
+            |> List.tryFind (fun timeEntry -> timeEntry.Date = date && timeEntry.ProjectName = project)
             |> Option.iter (fun timeEntry -> prestations.Cells[row, col + 4].Value <- timeEntry.Duration))
 
     package
