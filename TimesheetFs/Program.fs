@@ -1,5 +1,6 @@
 ﻿module Program
 
+open System.Threading
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
 open Spectre.Console
@@ -47,7 +48,12 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             let timeEntries = date |> getTimeEntries
             ctx.Status <- "Generating [bold green]Excel[/] file"
             timeEntries |> generateExcel
-            outputFile |> openFile)
+            ctx.Status <- "[bold green]Excel[/] file generated, fix it if needed."
+            outputFile |> openFile
+            ctx.Status <- "Opening [bold dodgerblue1]Outlook[/] template"
+
+            Thread.Sleep(5000)
+            )
     )
 
     AnsiConsole.MarkupLine($"File {outputFile} generated.")
