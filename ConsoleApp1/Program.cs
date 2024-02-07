@@ -4,7 +4,7 @@ PrepareOutlookMail(DateTime.Today, @"c:\temp\TS-202401-Delcoigne-Vincent.xlsx");
 
 void PrepareOutlookMail(DateTime date, string attachmentPath)
 {
-    var mail = new Application().CreateItem(OlItemType.olMailItem) as MailItem;
+    var mail = (MailItem) new Application().CreateItem(OlItemType.olMailItem);
     mail.Subject = $"Timesheet {date:Y}";
     var recipTo = mail.Recipients.Add("pnijs@actiris.be");
     recipTo.Type = (int) OlMailRecipientType.olTo;
@@ -14,16 +14,13 @@ void PrepareOutlookMail(DateTime date, string attachmentPath)
     mail.Attachments.Add(attachmentPath,
         OlAttachmentType.olByValue, Type.Missing, Type.Missing);
 
-    mail.Body =
+    var body =
         $"""
-         Bonjour,
-
-         Voici ma Timesheet pour le mois de {date:Y}.
-
+         <p>Bonjour,</p>
+         <p>Voici ma Timesheet pour le mois de {date:Y}.</p>
          Cordialement,
-
-         Delcoigne Vincent.
          """;
     mail.Recipients.ResolveAll();
     mail.Display(false);
+    mail.HTMLBody = body + mail.HTMLBody;
 }
