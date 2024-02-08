@@ -48,9 +48,8 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             let timeEntries = date |> getTimeEntries
             ctx.Status <- "Generating [bold green]Excel[/] file"
             timeEntries |> generateExcel
-            ctx.Status <- "[bold green]Excel[/] file generated, update it if needed."
+            ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
             outputFile |> openFile
-            ctx.Status <- "Opening [bold dodgerblue1]Outlook[/] e-mail"
             openEmail date outputFile
             )
     )
