@@ -7,6 +7,7 @@ open System
 open System.Globalization
 open System.IO
 open Timesheet
+open Email
 open Common
 
 // TODO:
@@ -47,10 +48,13 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             let timeEntries = date |> getTimeEntries
             ctx.Status <- "Generating [bold green]Excel[/] file"
             timeEntries |> generateExcel
-            outputFile |> openFile)
+            ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
+            outputFile |> openFile
+            openEmail date outputFile
+            )
     )
 
-    AnsiConsole.MarkupLine($"File {outputFile} generated.")
+    AnsiConsole.MarkupLine("Done 🙂")
 
 [<EntryPoint>]
 let main argv =
