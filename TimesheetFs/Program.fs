@@ -1,6 +1,5 @@
 ﻿module Program
 
-open System.Threading
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
 open Spectre.Console
@@ -8,6 +7,7 @@ open System
 open System.Globalization
 open System.IO
 open Timesheet
+open Email
 open Common
 
 // TODO:
@@ -48,15 +48,14 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             let timeEntries = date |> getTimeEntries
             ctx.Status <- "Generating [bold green]Excel[/] file"
             timeEntries |> generateExcel
-            ctx.Status <- "[bold green]Excel[/] file generated, fix it if needed."
+            ctx.Status <- "[bold green]Excel[/] file generated, update it if needed."
             outputFile |> openFile
-            ctx.Status <- "Opening [bold dodgerblue1]Outlook[/] template"
-
-            Thread.Sleep(5000)
+            ctx.Status <- "Opening [bold dodgerblue1]Outlook[/] e-mail"
+            openEmail date outputFile
             )
     )
 
-    AnsiConsole.MarkupLine($"File {outputFile} generated.")
+    AnsiConsole.MarkupLine("Done 🙂")
 
 [<EntryPoint>]
 let main argv =

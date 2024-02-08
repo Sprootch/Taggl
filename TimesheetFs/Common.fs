@@ -44,5 +44,4 @@ let roundHours(ts: TimeSpan) =
 let openFile filename =
     let psi = ProcessStartInfo(filename)
     psi.UseShellExecute <- true
-    let proc = Process.Start(psi)
-    proc.WaitForExit()
+    Process.Start(psi).WaitForExit()
