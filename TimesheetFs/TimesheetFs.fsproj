@@ -20,16 +20,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="EPPlus" Version="7.0.8" />
+      <PackageReference Include="EPPlus" Version="7.1.2" />
       <PackageReference Include="FsExcel" Version="0.0.49" />
       <PackageReference Include="FSharp.SystemCommandLine" Version="0.17.0-beta4" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
       <PackageReference Include="Microsoft.Office.Interop.Outlook" Version="15.0.4797.1004" />
-      <PackageReference Include="Spectre.Console" Version="0.48.0" />
-      <PackageReference Include="Toggl.Api" Version="8.0.7" />
-      <PackageReference Update="FSharp.Core" Version="8.0.101" />
+      <PackageReference Include="Spectre.Console" Version="0.49.1" />
+      <PackageReference Include="Toggl.Api" Version="8.0.22" />
+      <PackageReference Update="FSharp.Core" Version="8.0.200" />
     </ItemGroup>
 
     <ItemGroup>
