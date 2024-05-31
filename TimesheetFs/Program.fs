@@ -9,6 +9,7 @@ open System.IO
 open Timesheet
 open Email
 open Common
+open Toggl.Api
 
 // TODO:
 // - Set :Thread & ThreadUI
@@ -21,7 +22,7 @@ let settings =
         .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
         .Build()
 
-let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"])
+let client = new TogglClient(TogglClientOptions(Key=settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
 
 let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =

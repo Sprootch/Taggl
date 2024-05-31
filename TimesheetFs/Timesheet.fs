@@ -2,7 +2,7 @@
 
 open System
 open System.Globalization
-open Toggl.Api.DataObjects
+open Toggl.Api.Models
 open Types
 open Common
 
@@ -21,7 +21,7 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         |> Option.defaultValue NoProject
 
     let getDuration(te: TimeEntry list) =
-        te |> List.sumBy (fun te -> te.Duration |> valueOrDefault) |> toTimespan
+        te |> List.sumBy (_.DurationSeconds) |> toTimespan
 
     timeEntries
     |> List.filter (fun te -> String.IsNullOrWhiteSpace(te.Stop) |> not)
