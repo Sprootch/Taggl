@@ -1,20 +1,24 @@
 module TogglApi
 
 open System
+open System.Threading
 open Toggl.Api
-open Toggl.Api.QueryObjects
 
-let getProjects(client: TogglClient) =
+let getMe(client: TogglClient) =
     async {
-        let! projects = client.Projects.GetAsync() |> Async.AwaitTask
-        return projects |> List.ofSeq
+        let! me = client.Me.GetAsync(false, CancellationToken.None) |> Async.AwaitTask
+        return me
+    }
+
+let getProjects(client: TogglClient) wid =
+    async {
+        let! projects = client.Projects.GetUsersAsync(wid, Array.Empty<int64>(), System.Nullable(), CancellationToken.None) |> Async.AwaitTask
+        return projects //|> List.ofSeq
     }
 
 let getTimeEntries (client: TogglClient) (startDate: DateTime) (endDate: DateTime) =
     async {
-        let param = TimeEntryParams(StartDate = startDate, EndDate = endDate)
-
-        let! timeEntries = client.TimeEntries.GetAsync(false, false,  startDate) |> Async.AwaitTask
+        let! timeEntries = client.TimeEntries.GetAsync(true, false, System.Nullable(), System.Nullable(), startDate, endDate, CancellationToken.None) |> Async.AwaitTask
 
         return timeEntries |> List.ofSeq
     }

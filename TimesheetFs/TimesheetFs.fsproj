@@ -28,7 +28,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
       <PackageReference Include="Microsoft.Office.Interop.Outlook" Version="15.0.4797.1004" />
       <PackageReference Include="Spectre.Console" Version="0.49.1" />
-      <PackageReference Include="Toggl.Api" Version="9.0.32-gaaec92c03a" />
+      <PackageReference Include="Toggl.Api" Version="9.0.33-gc4458ee370" />
       <PackageReference Update="FSharp.Core" Version="8.0.200" />
     </ItemGroup>
 
