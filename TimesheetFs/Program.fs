@@ -13,7 +13,6 @@ open Toggl.Api
 
 // TODO:
 // - Set :Thread & ThreadUI
-// open Mail template
 // translation
 let settings =
     ConfigurationBuilder()
@@ -43,18 +42,17 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
         | 12 -> Spinner.Known.Christmas
         | _ -> Spinner.Known.BouncingBar
 
-    let timeEntries = date |> getTimeEntries
-    // status.Start(
-    //     "Fetching time entries from [bold red]Toggl[/]",
-    //     (fun ctx ->
-    //         let timeEntries = date |> getTimeEntries
-    //         ctx.Status <- "Generating [bold green]Excel[/] file"
-    //         timeEntries |> generateExcel
-    //         ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
-    //         outputFile |> openFile
-    //         openEmail date outputFile
-    //         )
-    // )
+    status.Start(
+        "Fetching time entries from [bold red]Toggl[/]",
+        (fun ctx ->
+            let timeEntries = date |> getTimeEntries
+            ctx.Status <- "Generating [bold green]Excel[/] file"
+            timeEntries |> generateExcel
+            ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
+            outputFile |> openFile
+            openEmail date outputFile
+            )
+    )
 
     AnsiConsole.MarkupLine("Done 🙂")
 

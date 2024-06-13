@@ -19,30 +19,27 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         |> Option.map (_.Name)
         |> Option.defaultValue NoProject
 
-    let getDuration(te: TimeEntry list) =
+    let getDuration (te: TimeEntry list) =
         te |> List.sumBy (_.Duration) |> toTimespan
 
     timeEntries
-    |> List.filter (fun te -> te.Stop.HasValue |> not)
+    |> List.filter (_.Stop.HasValue)
     |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
     |> List.collect (fun (prjId, te) ->
         te
-        |> List.groupBy (fun te ->
-            te.Start)
-            // |> (fun date -> DateTime.Parse(date, CultureInfo.InvariantCulture))
-            // |> (_.Date))
+        |> List.groupBy (_.Start.Value.Date.Date)
         |> List.map (fun (date, te) ->
             { ProjectName = getProjectName prjId
-              Date = DateOnly.FromDateTime(date.Value.Date)
+              Date = DateOnly.FromDateTime(date.Date)
               Duration = getDuration te }))
 
 let getTimeEntries client date =
     let startDate = date |> firstDayOfMonth
     let endDate = startDate |> lastDayOfMonth
 
-    let me = TogglApi.getMe client |> Async.RunSynchronously
-    let projects = TogglApi.getProjects client me.DefaultWorkspaceId |> Async.RunSynchronously
+    let projects = TogglApi.getMyProjects client |> Async.RunSynchronously
 
-    let timeEntries = TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
-    ()
-    // timeEntries |> transform projects
+    let timeEntries =
+        TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
+
+    timeEntries |> transform projects
