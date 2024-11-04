@@ -21,8 +21,6 @@ let settings =
         .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
         .Build()
 
-// let firstName = settings["Firstname"]
-// let lastName = settings["Lastname"]
 let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
 
@@ -75,7 +73,7 @@ let main argv =
             Input.Argument<string>("Lastname", "Enter your lastname"),
             Input.Argument<string>("Firstname", "Enter your firstname"),
             Input.OptionMaybe<DateTime>([ "--date"; "-d" ], "The timesheet date. By default previous month"),
-            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default C:\\temp")
+            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default the current directory")
         )
 
         setHandler generate
