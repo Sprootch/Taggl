@@ -37,6 +37,11 @@ let setupDate date (package: ExcelPackage) =
     package.Workbook.Worksheets["Configuration"].Cells["D13"].Value <- date
     package
 
+let setupName (last, first) (package: ExcelPackage) =
+    package.Workbook.Worksheets["Configuration"].Cells["D14"].Value <- last
+    package.Workbook.Worksheets["Configuration"].Cells["D15"].Value <- first
+    package
+
 let addTimeEntries date timeEntries (package: ExcelPackage) =
     let prestations = package.Workbook.Worksheets["Prestations"]
 
@@ -54,11 +59,12 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
 
 let save path (package: ExcelPackage) = package.SaveAs(path |> FileInfo)
 
-let generateExcel outputFile date timeEntries =
+let generateExcel outputFile date name timeEntries =
     let date = date |> firstDayOfMonth
 
     new ExcelPackage("Timesheet-Template-v10.xlsx")
     |> setupDate date
+    |> setupName name
     |> setupProjects timeEntries
     |> addTimeEntries date timeEntries
     |> save outputFile

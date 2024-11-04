@@ -9,10 +9,10 @@ open System.IO
 open Timesheet
 open Email
 open Common
+open Toggl.Api
 
 // TODO:
 // - Set :Thread & ThreadUI
-// open Mail template
 // translation
 let settings =
     ConfigurationBuilder()
@@ -21,17 +21,23 @@ let settings =
         .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
         .Build()
 
-let client = Toggl.Api.TogglClient(settings["Toggl:ApiKey"])
+// let firstName = settings["Firstname"]
+// let lastName = settings["Lastname"]
+let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
 
-let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
+let generate (lastName: string, firstName: string, dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
-    let outputFile = Path.Combine(outputDir, $"TS-{date:yyyyMM}-Delcoigne-Vincent.xlsx")
 
-    let generateExcel = Excel.generateExcel outputFile date
+    let outputFile =
+        Path.Combine(outputDir, $"TS-{date:yyyyMM}-{lastName}-{firstName}.xlsx")
 
-    AnsiConsole.MarkupLine($"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}""")
+    let generateExcel = Excel.generateExcel outputFile date (lastName, firstName)
+
+    AnsiConsole.MarkupLine(
+        $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}"""
+    )
 
     let status = AnsiConsole.Status()
     status.SpinnerStyle <- Style.Parse("blue")
@@ -50,8 +56,7 @@ let generate(dateMaybe: DateTime option, outputDirMaybe: string option) =
             timeEntries |> generateExcel
             ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
             outputFile |> openFile
-            openEmail date outputFile
-            )
+            openEmail date outputFile)
     )
 
     AnsiConsole.MarkupLine("Done 🙂")
@@ -67,6 +72,8 @@ let main argv =
         description "Generates an Actiris Timesheet"
 
         inputs (
+            Input.Argument<string>("Lastname", "Enter your lastname"),
+            Input.Argument<string>("Firstname", "Enter your firstname"),
             Input.OptionMaybe<DateTime>([ "--date"; "-d" ], "The timesheet date. By default previous month"),
             Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default C:\\temp")
         )

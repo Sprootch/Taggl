@@ -3,7 +3,7 @@
 open System
 open System.Diagnostics
 
-let firstDayOfMonth(date: DateTime) = DateTime(date.Year, date.Month, 1)
+let firstDayOfMonth(date: DateTime) = DateTime(date.Year, date.Month, 1, 0, 0, 0, DateTimeKind.Local)
 
 let lastDayOfMonth(date: DateTime) = date.AddMonths(1).AddSeconds(-1)
 
