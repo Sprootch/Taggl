@@ -22,14 +22,19 @@ let setupProjects timeEntries (package: ExcelPackage) =
         |> Option.defaultValue "AUTRE"
 
     timeEntries
-    |> List.map (_.ProjectName)
-    |> List.distinct
-    |> List.filter isBillable
-    |> List.map (fun name -> (name, name |> getProjectCode))
-    |> List.iteri (fun row (name, code) ->
+    |> List.map (fun te -> (te.ProjectName, te.Description))
+    |> List.distinctBy fst
+    |> List.filter (fun (a, b) -> a |> isBillable)
+    |> List.map (fun (name, desc) -> (name, name |> getProjectCode, desc))
+    |> List.iteri (fun row (name, code, desc) ->
         let prestations = package.Workbook.Worksheets["Prestations"]
         prestations.Cells[7 + row, 2].Value <- code
-        prestations.Cells[7 + row, 3].Value <- name)
+
+        prestations.Cells[7 + row, 3].Value <-
+            (if name = "Autre" then
+                 (desc |> Option.defaultValue name)
+             else
+                 name))
 
     package
 

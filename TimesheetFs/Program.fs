@@ -7,7 +7,6 @@ open System
 open System.Globalization
 open System.IO
 open Timesheet
-open Email
 open Common
 open Toggl.Api
 
@@ -57,7 +56,8 @@ let generate (lastName: string, firstName: string, dateMaybe: DateTime option, o
             timeEntries |> generateExcel
             ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
             outputFile |> openFile
-            openEmail date outputFile)
+        // openEmail date outputFile
+        )
     )
 
     AnsiConsole.MarkupLine("Done 🙂")

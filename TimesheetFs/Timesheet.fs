@@ -8,6 +8,9 @@ open Common
 [<Literal>]
 let NoProject = "! No project !"
 
+[<Literal>]
+let OtherProject = "Autre"
+
 let valueOrDefault = Option.ofNullable >> Option.defaultValue 0L
 
 let private toTimespan = float >> TimeSpan.FromSeconds >> roundSeconds >> roundHours
@@ -16,22 +19,41 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     let getProjectName id =
         projects
         |> List.tryFind (fun prj -> prj.Id = id)
-        |> Option.map (_.Name)
+        |> Option.map _.Name
         |> Option.defaultValue NoProject
 
     let getDuration (te: TimeEntry list) =
-        te |> List.sumBy (_.Duration) |> toTimespan
+        te |> List.sumBy _.Duration |> toTimespan
 
-    timeEntries
-    |> List.filter _.Stop.HasValue
-    |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
-    |> List.collect (fun (prjId, te) ->
-        te
-        |> List.groupBy _.Start.Value.Date.Date
-        |> List.map (fun (date, te) ->
-            { ProjectName = getProjectName prjId
-              Date = DateOnly.FromDateTime(date.Date)
-              Duration = getDuration te }))
+    let otherProject = projects |> List.find (fun prj -> prj.Name = OtherProject)
+
+    let others =
+        timeEntries
+        |> List.filter (fun te -> te.ProjectId = otherProject.Id && te.Stop.HasValue)
+        |> List.groupBy _.Description
+        |> List.collect (fun (desc, te) ->
+            te
+            |> List.groupBy _.Start.Value.Date.Date
+            |> List.map (fun (date, te) ->
+                { ProjectName = otherProject.Name
+                  Description = Some desc
+                  Date = DateOnly.FromDateTime(date.Date)
+                  Duration = getDuration te }))
+
+    let timing =
+        timeEntries
+        |> List.filter (fun te -> te.ProjectId <> otherProject.Id && te.Stop.HasValue)
+        |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
+        |> List.collect (fun (prjId, te) ->
+            te
+            |> List.groupBy _.Start.Value.Date.Date
+            |> List.map (fun (date, te) ->
+                { ProjectName = getProjectName prjId
+                  Description = None
+                  Date = DateOnly.FromDateTime(date.Date)
+                  Duration = getDuration te }))
+
+    timing @ others
 
 let getTimeEntries client date =
     let startDate = date |> firstDayOfMonth
