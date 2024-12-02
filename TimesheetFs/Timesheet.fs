@@ -23,11 +23,11 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
         te |> List.sumBy (_.Duration) |> toTimespan
 
     timeEntries
-    |> List.filter (_.Stop.HasValue)
+    |> List.filter _.Stop.HasValue
     |> List.groupBy (fun te -> te.ProjectId |> valueOrDefault)
     |> List.collect (fun (prjId, te) ->
         te
-        |> List.groupBy (_.Start.Value.Date.Date)
+        |> List.groupBy _.Start.Value.Date.Date
         |> List.map (fun (date, te) ->
             { ProjectName = getProjectName prjId
               Date = DateOnly.FromDateTime(date.Date)

@@ -12,6 +12,9 @@ open Common
 open Toggl.Api
 
 // TODO:
+// Si c'est autre, prendre le libellé du pointage;
+// Quand on génère, d'abord regarde si un fichier Excel existe. Si c'est le cas, le réutiliser.
+// Rajoute un paramètre -f pour bypasser le fichier Excel.
 // - Set :Thread & ThreadUI
 // translation
 let settings =
