@@ -26,6 +26,7 @@ let settings =
 
 let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
+let openEmail = openEmail (settings["MailRecipients"])
 
 let generate (lastName: string, firstName: string, dateMaybe: DateTime option, outputDirMaybe: string option) =
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
@@ -60,7 +61,7 @@ let generate (lastName: string, firstName: string, dateMaybe: DateTime option, o
             openEmail date outputFile)
     )
 
-    AnsiConsole.MarkupLine("Done 🙂")
+    AnsiConsole.MarkupLine("Done")
 
 [<EntryPoint>]
 let main argv =

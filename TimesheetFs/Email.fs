@@ -3,10 +3,10 @@
 open System
 open Microsoft.Office.Interop.Outlook
 
-let openEmail date attachment =
+let openEmail recipients date attachment =
     let mail = ApplicationClass().CreateItem(OlItemType.olMailItem) :?> MailItem
     mail.Subject <- $"Timesheet {date:Y}"
-    mail.To <- "pnijs@actiris.be; schauvaux@actiris.be"
+    mail.To <- recipients
 
     mail.Attachments.Add(attachment, OlAttachmentType.olByValue, Type.Missing, Type.Missing)
     |> ignore
