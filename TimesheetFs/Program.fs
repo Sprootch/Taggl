@@ -28,9 +28,17 @@ let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
 let openEmail = openEmail (settings["MailRecipients"])
 
-let generate (lastName: string, firstName: string, dateMaybe: DateTime option, outputDirMaybe: string option) =
+let generate
+    (
+        lastName: string,
+        firstName: string,
+        dateMaybe: DateTime option,
+        outputDirMaybe: string option,
+        forceMaybe: bool option
+    ) =
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
+    let forceRegen = defaultArg forceMaybe false
 
     let outputFile =
         Path.Combine(outputDir, $"TS-{date:yyyyMM}-{lastName}-{firstName}.xlsx")
@@ -50,18 +58,29 @@ let generate (lastName: string, firstName: string, dateMaybe: DateTime option, o
         | 12 -> Spinner.Known.Christmas
         | _ -> Spinner.Known.BouncingBar
 
-    status.Start(
-        "Fetching time entries from [bold red]Toggl[/]",
-        (fun ctx ->
-            let timeEntries = date |> getTimeEntries
-            ctx.Status <- "Generating [bold green]Excel[/] file"
-            timeEntries |> generateExcel
-            ctx.Status <- "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
-            outputFile |> openFile
-            openEmail date outputFile)
-    )
+    if File.Exists outputFile && not forceRegen then
+        status.Start(
+            "Opening existing [bold green]Excel[/] file",
+            (fun ctx ->
+                outputFile |> openFile
+                openEmail date outputFile)
+        )
+    else
+        status.Start(
+            "Fetching time entries from [bold red]Toggl[/]",
+            (fun ctx ->
+                let timeEntries = date |> getTimeEntries
+                ctx.Status <- "Generating [bold green]Excel[/] file"
+                timeEntries |> generateExcel
 
-    AnsiConsole.MarkupLine("Done")
+                ctx.Status <-
+                    "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
+
+                outputFile |> openFile
+                openEmail date outputFile)
+        )
+
+        AnsiConsole.MarkupLine("Done")
 
 [<EntryPoint>]
 let main argv =
@@ -77,7 +96,8 @@ let main argv =
             Input.Argument<string>("Lastname", "Enter your lastname"),
             Input.Argument<string>("Firstname", "Enter your firstname"),
             Input.OptionMaybe<DateTime>([ "--date"; "-d" ], "The timesheet date. By default previous month"),
-            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default the current directory")
+            Input.OptionMaybe<string>([ "--output"; "-o" ], "The output directory. By default the current directory"),
+            Input.OptionMaybe<bool>([ "--force"; "-f" ], "Force the regeneration even if the Excel file exists.")
         )
 
         setHandler generate
