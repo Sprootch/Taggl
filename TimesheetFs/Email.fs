@@ -1,11 +1,13 @@
 ﻿module Email
 
 open System
+open System.Globalization
 open Microsoft.Office.Interop.Outlook
 
-let openEmail recipients date attachment =
+let openEmail recipients (date: DateTime) attachment =
     let mail = ApplicationClass().CreateItem(OlItemType.olMailItem) :?> MailItem
-    mail.Subject <- $"Timesheet {date:Y}"
+    let date = date.ToString("Y", CultureInfo("FR"))
+    mail.Subject <- $"Timesheet {date}"
     mail.To <- recipients
 
     mail.Attachments.Add(attachment, OlAttachmentType.olByValue, Type.Missing, Type.Missing)
@@ -14,7 +16,7 @@ let openEmail recipients date attachment =
     let body =
         $"""
          <p>Bonjour,</p>
-         <p>Voici ma Timesheet pour le mois de {date:Y}.</p>
+         <p>Voici ma Timesheet pour le mois de {date}.</p>
          Cordialement,
          """
 
