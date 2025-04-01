@@ -62,7 +62,7 @@ let save path (package: ExcelPackage) = package.SaveAs(path |> FileInfo)
 let generateExcel outputFile date name timeEntries =
     let date = date |> firstDayOfMonth
 
-    new ExcelPackage("Timesheet-Template-v10.xlsx")
+    new ExcelPackage("Timesheet-Template.xlsx")
     |> setupDate date
     |> setupName name
     |> setupProjects timeEntries
