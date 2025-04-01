@@ -16,11 +16,11 @@ let private transform (projects: Project list) (timeEntries: TimeEntry list) =
     let getProjectName id =
         projects
         |> List.tryFind (fun prj -> prj.Id = id)
-        |> Option.map (_.Name)
+        |> Option.map _.Name
         |> Option.defaultValue NoProject
 
     let getDuration (te: TimeEntry list) =
-        te |> List.sumBy (_.Duration) |> toTimespan
+        te |> List.sumBy _.Duration |> toTimespan
 
     timeEntries
     |> List.filter _.Stop.HasValue

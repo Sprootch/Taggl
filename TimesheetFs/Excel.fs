@@ -22,7 +22,7 @@ let setupProjects timeEntries (package: ExcelPackage) =
         |> Option.defaultValue "AUTRE"
 
     timeEntries
-    |> List.map (_.ProjectName)
+    |> List.map _.ProjectName
     |> List.distinct
     |> List.filter isBillable
     |> List.map (fun name -> (name, name |> getProjectCode))
