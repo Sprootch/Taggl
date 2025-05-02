@@ -29,14 +29,14 @@ let round(ts: TimeSpan) =
 
 let roundSeconds(ts: TimeSpan) =
     if (ts.Seconds <= 30) then
-        ts.Subtract(TimeSpan.FromSeconds(ts.Seconds))
+        ts.Subtract(TimeSpan.FromSeconds(ts.Seconds |> int64))
     else
         ts.Add(TimeSpan.FromSeconds((60 - ts.Seconds) |> float))
 
 let roundHours(ts: TimeSpan) =
     if (ts.Hours = 8) then
         TimeSpan.FromHours(8)
-    else if (ts.Add(TimeSpan.FromMinutes(10)).Hours = 8) then
+    else if (ts.Add(TimeSpan.FromMinutes(10L)).Hours = 8) then
         TimeSpan.FromHours(8)
     else
         ts
