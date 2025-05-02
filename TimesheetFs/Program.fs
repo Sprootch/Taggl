@@ -2,6 +2,7 @@
 
 open FSharp.SystemCommandLine
 open Microsoft.Extensions.Configuration
+open OfficeOpenXml
 open Spectre.Console
 open System
 open System.Globalization
@@ -34,13 +35,13 @@ let generate
         outputDirMaybe: string option,
         forceMaybe: bool option
     ) =
+    ExcelPackage.License.SetNonCommercialPersonal($"{lastName} {firstName}");
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
     let forceRegen = defaultArg forceMaybe false
 
     let outputFile =
         Path.Combine(outputDir, $"TS-{date:yyyyMM}-{lastName}-{firstName}.xlsx")
-
     let generateExcel = Excel.generateExcel outputFile date (lastName, firstName)
 
     AnsiConsole.MarkupLine(
