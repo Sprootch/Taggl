@@ -1,0 +1,163 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "GuiTerminal/1.0.0": {
+        "dependencies": {
+          "Terminal.Gui": "2.0.0-v2-develop.2203"
+        },
+        "runtime": {
+          "GuiTerminal.dll": {}
+        }
+      },
+      "ColorHelper/1.8.1": {
+        "runtime": {
+          "lib/netstandard2.0/ColorHelper.dll": {
+            "assemblyVersion": "1.8.1.0",
+            "fileVersion": "1.8.1.0"
+          }
+        }
+      },
+      "System.IO.Abstractions/21.0.22": {
+        "dependencies": {
+          "TestableIO.System.IO.Abstractions": "21.0.22",
+          "TestableIO.System.IO.Abstractions.Wrappers": "21.0.22"
+        },
+        "runtime": {
+          "lib/net8.0/System.IO.Abstractions.dll": {
+            "assemblyVersion": "21.0.0.0",
+            "fileVersion": "21.0.22.62509"
+          }
+        }
+      },
+      "System.Text.Encodings.Web/8.0.0": {},
+      "System.Text.Json/8.0.4": {
+        "dependencies": {
+          "System.Text.Encodings.Web": "8.0.0"
+        }
+      },
+      "Terminal.Gui/2.0.0-v2-develop.2203": {
+        "dependencies": {
+          "ColorHelper": "1.8.1",
+          "System.IO.Abstractions": "21.0.22",
+          "System.Text.Json": "8.0.4",
+          "Wcwidth": "2.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Terminal.Gui.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        },
+        "resources": {
+          "lib/net8.0/fr-FR/Terminal.Gui.resources.dll": {
+            "locale": "fr-FR"
+          },
+          "lib/net8.0/ja-JP/Terminal.Gui.resources.dll": {
+            "locale": "ja-JP"
+          },
+          "lib/net8.0/pt-PT/Terminal.Gui.resources.dll": {
+            "locale": "pt-PT"
+          },
+          "lib/net8.0/zh-Hans/Terminal.Gui.resources.dll": {
+            "locale": "zh-Hans"
+          }
+        }
+      },
+      "TestableIO.System.IO.Abstractions/21.0.22": {
+        "runtime": {
+          "lib/net8.0/TestableIO.System.IO.Abstractions.dll": {
+            "assemblyVersion": "21.0.0.0",
+            "fileVersion": "21.0.22.62509"
+          }
+        }
+      },
+      "TestableIO.System.IO.Abstractions.Wrappers/21.0.22": {
+        "dependencies": {
+          "TestableIO.System.IO.Abstractions": "21.0.22"
+        },
+        "runtime": {
+          "lib/net8.0/TestableIO.System.IO.Abstractions.Wrappers.dll": {
+            "assemblyVersion": "21.0.0.0",
+            "fileVersion": "21.0.22.62509"
+          }
+        }
+      },
+      "Wcwidth/2.0.0": {
+        "runtime": {
+          "lib/net8.0/Wcwidth.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GuiTerminal/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ColorHelper/1.8.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rblWXd/02TfwJjX53xEfQnbnDRKxCm09VtavV8JaIcmIFWt9efNf6xTQ3WeXgy/she5R31eRTtnizFoUoDrs5w==",
+      "path": "colorhelper/1.8.1",
+      "hashPath": "colorhelper.1.8.1.nupkg.sha512"
+    },
+    "System.IO.Abstractions/21.0.22": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DRnFyMIjO1KG9fqUPKV7XDPgECEwrNpsb3OLD0mImViVpRZ5747o7vqrOYbn9AMaQ8eajLeKH0fXQglgH7v42A==",
+      "path": "system.io.abstractions/21.0.22",
+      "hashPath": "system.io.abstractions.21.0.22.nupkg.sha512"
+    },
+    "System.Text.Encodings.Web/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ==",
+      "path": "system.text.encodings.web/8.0.0",
+      "hashPath": "system.text.encodings.web.8.0.0.nupkg.sha512"
+    },
+    "System.Text.Json/8.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bAkhgDJ88XTsqczoxEMliSrpijKZHhbJQldhAmObj/RbrN3sU5dcokuXmWJWsdQAhiMJ9bTayWsL1C9fbbCRhw==",
+      "path": "system.text.json/8.0.4",
+      "hashPath": "system.text.json.8.0.4.nupkg.sha512"
+    },
+    "Terminal.Gui/2.0.0-v2-develop.2203": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IuZfBfmBkHtfiQhd+QYkYI7Y8ag9GtLRusYeako1DLQ7tgrTQTbualRwJWGeNJWwIQLMbj/cEPpoenFDP5Ot/w==",
+      "path": "terminal.gui/2.0.0-v2-develop.2203",
+      "hashPath": "terminal.gui.2.0.0-v2-develop.2203.nupkg.sha512"
+    },
+    "TestableIO.System.IO.Abstractions/21.0.22": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yq3I8rUjNoo4JTOT3jbGfTM5VfowaSYiooDO2bfvQe6XGVyZiSIzaKyCmSnuUEyuktw6zzuVE1lJnUeDhJWtyQ==",
+      "path": "testableio.system.io.abstractions/21.0.22",
+      "hashPath": "testableio.system.io.abstractions.21.0.22.nupkg.sha512"
+    },
+    "TestableIO.System.IO.Abstractions.Wrappers/21.0.22": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ETpw1B6VOsQ5zbfqxqLKjITnMvB9M0K5/bK8qJc6jih+tnlKQmtnnOPSS+OeKCqsZDYeHxPNp4ytQPJS3R+WXA==",
+      "path": "testableio.system.io.abstractions.wrappers/21.0.22",
+      "hashPath": "testableio.system.io.abstractions.wrappers.21.0.22.nupkg.sha512"
+    },
+    "Wcwidth/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eGZYH/V+X1DwEXrPUlUcAp8pU5a38d8IvaQzq4pclJxF1x8bizssIo4uWc3qxmS64BNGK5WnDxyBYJz84+Msqg==",
+      "path": "wcwidth/2.0.0",
+      "hashPath": "wcwidth.2.0.0.nupkg.sha512"
+    }
+  }
+}

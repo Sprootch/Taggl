@@ -1,0 +1,80 @@
+{
+  "version": 2,
+  "dgSpecHash": "qA3d8sKjMJs=",
+  "success": true,
+  "projectFilePath": "C:\\Projects\\Perso\\Taggl\\TerminalFs\\TerminalFs.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\colorhelper\\1.8.1\\colorhelper.1.8.1.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\fsharp.core\\9.0.201\\fsharp.core.9.0.201.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\jetbrains.annotations\\2024.3.0\\jetbrains.annotations.2024.3.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.build.tasks.git\\8.0.0\\microsoft.build.tasks.git.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis\\4.11.0\\microsoft.codeanalysis.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.4\\microsoft.codeanalysis.analyzers.3.3.4.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.common\\4.11.0\\microsoft.codeanalysis.common.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.csharp\\4.11.0\\microsoft.codeanalysis.csharp.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.csharp.workspaces\\4.11.0\\microsoft.codeanalysis.csharp.workspaces.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.visualbasic\\4.11.0\\microsoft.codeanalysis.visualbasic.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.visualbasic.workspaces\\4.11.0\\microsoft.codeanalysis.visualbasic.workspaces.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.codeanalysis.workspaces.common\\4.11.0\\microsoft.codeanalysis.workspaces.common.4.11.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\9.0.2\\microsoft.extensions.dependencyinjection.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.2\\microsoft.extensions.dependencyinjection.abstractions.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.logging\\9.0.2\\microsoft.extensions.logging.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.2\\microsoft.extensions.logging.abstractions.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.options\\9.0.2\\microsoft.extensions.options.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.2\\microsoft.extensions.primitives.9.0.2.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.sourcelink.common\\8.0.0\\microsoft.sourcelink.common.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\microsoft.sourcelink.github\\8.0.0\\microsoft.sourcelink.github.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.collections.immutable\\8.0.0\\system.collections.immutable.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition\\8.0.0\\system.composition.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition.attributedmodel\\8.0.0\\system.composition.attributedmodel.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition.convention\\8.0.0\\system.composition.convention.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition.hosting\\8.0.0\\system.composition.hosting.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition.runtime\\8.0.0\\system.composition.runtime.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.composition.typedparts\\8.0.0\\system.composition.typedparts.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.io.abstractions\\22.0.11\\system.io.abstractions.22.0.11.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.reflection.metadata\\8.0.0\\system.reflection.metadata.8.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.text.encoding.codepages\\7.0.0\\system.text.encoding.codepages.7.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\terminal.gui\\2.0.0-develop.4519\\terminal.gui.2.0.0-develop.4519.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\terminal.gui.elmish\\3.0.0-v2-develop.2329-v1\\terminal.gui.elmish.3.0.0-v2-develop.2329-v1.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\testableio.system.io.abstractions\\22.0.11\\testableio.system.io.abstractions.22.0.11.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\testableio.system.io.abstractions.wrappers\\22.0.11\\testableio.system.io.abstractions.wrappers.22.0.11.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\testably.abstractions.filesystem.interface\\9.0.0\\testably.abstractions.filesystem.interface.9.0.0.nupkg.sha512",
+    "C:\\Users\\vdelcoigne\\.nuget\\packages\\wcwidth\\2.0.0\\wcwidth.2.0.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1608",
+      "level": "Warning",
+      "message": "Detected package version outside of dependency constraint: Terminal.Gui.Elmish 3.0.0-v2-develop.2329-v1 requires System.IO.Abstractions (>= 21.0.22 && < 22.0.0) but version System.IO.Abstractions 22.0.11 was resolved.",
+      "projectPath": "C:\\Projects\\Perso\\Taggl\\TerminalFs\\TerminalFs.fsproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Projects\\Perso\\Taggl\\TerminalFs\\TerminalFs.fsproj",
+      "libraryId": "System.IO.Abstractions",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Warning",
+      "message": "Detected package downgrade: Terminal.Gui from 2.0.0-v2-develop.2329 to 2.0.0-develop.4519. Reference the package directly from the project to select a different version. \r\n TerminalFs -> Terminal.Gui.Elmish 3.0.0-v2-develop.2329-v1 -> Terminal.Gui (>= 2.0.0-v2-develop.2329) \r\n TerminalFs -> Terminal.Gui (>= 2.0.0-develop.4519)",
+      "projectPath": "C:\\Projects\\Perso\\Taggl\\TerminalFs\\TerminalFs.fsproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Projects\\Perso\\Taggl\\TerminalFs\\TerminalFs.fsproj",
+      "libraryId": "Terminal.Gui",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
+}
