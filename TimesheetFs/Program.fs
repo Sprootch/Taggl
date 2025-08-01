@@ -27,6 +27,18 @@ let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
 let getTimeEntries = getTimeEntries client
 let openEmail = openEmail (settings["MailRecipients"])
 
+let askOpenEmail date outputFile =
+    let confirmation =
+        AnsiConsole.Prompt(
+            TextPrompt<bool>("Open [bold dodgerblue1]Outlook[/] ?")
+                .AddChoice(true)
+                .AddChoice(false)
+                .DefaultValue(true)
+                .WithConverter(fun choice -> if choice then "y" else "n")
+        )
+
+    if confirmation then openEmail date outputFile else ()
+
 let generate
     (
         lastName: string,
@@ -35,49 +47,37 @@ let generate
         outputDirMaybe: string option,
         forceMaybe: bool option
     ) =
-    ExcelPackage.License.SetNonCommercialPersonal($"{lastName} {firstName}");
+    ExcelPackage.License.SetNonCommercialPersonal($"{lastName} {firstName}")
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
     let forceRegen = defaultArg forceMaybe false
 
     let outputFile =
         Path.Combine(outputDir, $"TS-{date:yyyyMM}-{lastName}-{firstName}.xlsx")
+
     let generateExcel = Excel.generateExcel outputFile date (lastName, firstName)
 
     AnsiConsole.MarkupLine(
-        $"""Generating Timesheet for {date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}"""
+        $"""Generating Timesheet for [bold slateblue1]{date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}[/]"""
     )
 
-    let status = AnsiConsole.Status()
-    status.SpinnerStyle <- Style.Parse("blue")
-
-    status.Spinner <-
-        match DateTime.Today.Month with
-        | 1
-        | 12 -> Spinner.Known.Christmas
-        | _ -> Spinner.Known.BouncingBar
-
     if File.Exists outputFile && not forceRegen then
-        status.Start(
-            "Opening existing [bold green]Excel[/] file",
-            (fun ctx ->
-                outputFile |> openFile
-                openEmail date outputFile)
-        )
+        AnsiConsole.MarkupLine($"Reusing existing [bold green]Excel[/] file ({outputFile})")
+        outputFile |> openFile
+        askOpenEmail date outputFile
+        AnsiConsole.MarkupLine("Done")
     else
-        status.Start(
-            "Fetching time entries from [bold red]Toggl[/]",
-            (fun ctx ->
-                let timeEntries = date |> getTimeEntries
-                ctx.Status <- "Generating [bold green]Excel[/] file"
-                timeEntries |> generateExcel
+        AnsiConsole.MarkupLine("Fetching time entries from [bold red]Toggl[/]")
+        let timeEntries = date |> getTimeEntries
+        AnsiConsole.MarkupLine("Generating [bold green]Excel[/] file")
+        timeEntries |> generateExcel
 
-                ctx.Status <-
-                    "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
-
-                outputFile |> openFile
-                openEmail date outputFile)
+        AnsiConsole.MarkupLine(
+            "Update your timesheet if needed. [bold dodgerblue1]Outlook[/] will be opened afterwards."
         )
+
+        outputFile |> openFile
+        askOpenEmail date outputFile
 
         AnsiConsole.MarkupLine("Done")
 
