@@ -15,4 +15,8 @@
       <PackageReference Include="Terminal.Gui.Elmish" Version="3.0.0-v2-develop.2329-v1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TimesheetFs\TimesheetFs.fsproj" />
+    </ItemGroup>
+
 </Project>

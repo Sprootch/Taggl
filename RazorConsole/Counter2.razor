@@ -1,0 +1,74 @@
+﻿@using RazorConsole.Components
+@using Spectre.Console
+@using Toggl.Api
+@using Columns = RazorConsole.Components.Columns
+@using Markup = RazorConsole.Components.Markup
+@using Panel = RazorConsole.Components.Panel
+@using Rows = RazorConsole.Components.Rows
+@namespace Counter.Components
+
+<Figlet Content="Taggl"/>
+<Newline/>
+
+<Panel Title="Timesheet" Border="BoxBorder.Rounded" Expand="true">
+    <Rows>
+        <Columns>
+            <Markup Content="Status :" Foreground="@Color.Grey70"/>
+            <Markup Content="@_currentStatus" Foreground="@Color.Green" Decoration="@Decoration.Bold"/>
+        </Columns>
+        <Newline/>
+        <Columns>
+            <TextButton Content="Start"
+                        OnClick="IncrementCount"
+                        BackgroundColor="@Color.Grey"
+                        FocusedColor="@Color.Blue"/>
+            <TextButton Content="Quit"
+                        OnClick="Exit"
+                        BackgroundColor="@Color.Grey"
+                        FocusedColor="@Color.Red" />
+            @* <TextButton Content="Reset" *@
+            @*             OnClick="ResetCount" *@
+            @*             BackgroundColor="@Color.Grey" *@
+            @*             FocusedColor="@Color.Yellow" /> *@
+        </Columns>
+    </Rows>
+</Panel>
+
+<Newline/>
+<Markup Content="Press Tab to change focus • Press Enter to click • Press Ctrl+C to exit" Foreground="@Color.Grey58"/>
+
+@code {
+    // IConfigurationRoot settings =
+    //     new ConfigurationBuilder()
+    //         .SetBasePath(Directory.GetCurrentDirectory())
+    //         .AddJsonFile("appsettings.json", false)
+    //         .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
+    //         .Build();
+    private readonly TogglClient _client = new(new TogglClientOptions
+    {
+        Key = "77775ba928442e3ea39bcb4258a52710"
+    });
+    private string _currentStatus = "Press Start to generate your timesheet";
+
+    private async Task IncrementCount()
+    {
+        var date = DateTime.Today.AddMonths(-1);
+
+        _currentStatus = "Fetching time entries from Toggl";
+        StateHasChanged();
+
+        var timeEntries = await Timesheet.Csharp.GetTimeEntriesAsync(_client, date);
+        _currentStatus = "Generating Excel file";
+        StateHasChanged();
+
+        // Excel.generateExcel(@"c:\temp\TS_VD.xlsx", date, "Vincent", "Delcoigne", timeEntries);
+        await Task.Run(() => Excel.generateExcel(@"c:\temp\TS_VD.xlsx", date, "Delcoigne", "Vincent", timeEntries));
+
+        Common.openFile(@"c:\temp\TS_VD.xlsx");
+    }
+
+    private static void Exit()
+    {
+        Environment.Exit(0);
+    }
+}

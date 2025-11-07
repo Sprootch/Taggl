@@ -1,6 +1,7 @@
 ﻿module Timesheet
 
 open System
+open Toggl.Api
 open Toggl.Api.Models
 open Types
 open Common
@@ -43,3 +44,18 @@ let getTimeEntries client date =
         TogglApi.getTimeEntries client startDate endDate |> Async.RunSynchronously
 
     timeEntries |> transform projects
+
+let getTimeEntriesAsync client date =
+    async {
+        let startDate = date |> firstDayOfMonth
+        let endDate = startDate |> lastDayOfMonth
+
+        let! projects = TogglApi.getMyProjects client
+        let! timeEntries = TogglApi.getTimeEntries client startDate endDate
+
+        return timeEntries |> transform projects
+    }
+
+type Csharp =
+    static member GetTimeEntriesAsync (client: TogglClient) date =
+        Async.StartAsTask(getTimeEntriesAsync client date)

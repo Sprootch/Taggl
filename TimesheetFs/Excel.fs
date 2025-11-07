@@ -59,7 +59,7 @@ let addTimeEntries date timeEntries (package: ExcelPackage) =
 
 let save path (package: ExcelPackage) = package.SaveAs(path |> FileInfo)
 
-let generateExcel outputFile date name timeEntries =
+let generateExcel outputFile date (name: string*string) timeEntries =
     let date = date |> firstDayOfMonth
 
     new ExcelPackage("Timesheet-Template.xlsx")
