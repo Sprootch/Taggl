@@ -8,7 +8,7 @@ Application.Init();
 
 try
 {
-    Application.Run(new MyView());
+    Application.Run(new ExampleWindow());
 }
 finally
 {
