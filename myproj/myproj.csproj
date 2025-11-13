@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="EPPlus" Version="8.0.3" />
+	  <PackageReference Include="Terminal.Gui" Version="2.0.0-develop.4519" />
+	  <PackageReference Include="Toggl.Api" Version="9.0.60" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TimesheetFs\TimesheetFs.fsproj" />
+  </ItemGroup>
+
+</Project>
