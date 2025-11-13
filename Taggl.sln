@@ -6,6 +6,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TerminalFs", "TerminalFs\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorConsole", "RazorConsole\RazorConsole.csproj", "{CB18668B-3472-4942-8120-3A91396054AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "myproj", "myproj\myproj.csproj", "{3488EB7F-079B-4C83-B2D3-F075BAF099E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{CB18668B-3472-4942-8120-3A91396054AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB18668B-3472-4942-8120-3A91396054AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB18668B-3472-4942-8120-3A91396054AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3488EB7F-079B-4C83-B2D3-F075BAF099E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3488EB7F-079B-4C83-B2D3-F075BAF099E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3488EB7F-079B-4C83-B2D3-F075BAF099E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3488EB7F-079B-4C83-B2D3-F075BAF099E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
