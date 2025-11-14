@@ -13,6 +13,8 @@ public class ExampleWindow : Window
         Key = "77775ba928442e3ea39bcb4258a52710"
     });
     private Label label { get; set; }
+    private readonly ProgressBar _progress;
+    private SpinnerView _spinner;
 
     public ExampleWindow()
     {
@@ -85,6 +87,14 @@ public class ExampleWindow : Window
             X = Pos.Center(),
             IsDefault = true
         };
+        _spinner = new SpinnerView
+        {
+            X = Pos.Right(label),
+            Y = Pos.Center(),
+            Style = new SpinnerStyle.Points(),
+            AutoSpin = true,
+            Visible = false
+        };
 
         // When login button is clicked display a message popup
         startButton.Accepting += async (_, e) =>
@@ -93,16 +103,40 @@ public class ExampleWindow : Window
             startButton.Visible = false;
             try
             {
+                // var cts = new CancellationTokenSource();
+                // var t = Pulse(cts.Token);
+                _spinner.Visible = true;
                 await GenerateTimesheet();
+
+                // await cts.CancelAsync();
+                // await t;
             }
             finally
             {
                 startButton.Visible = true;
+                _spinner.Visible = false;
             }
         };
 
+        _progress = new ProgressBar
+        {
+            ProgressBarFormat = ProgressBarFormat.Simple,
+            ProgressBarStyle = ProgressBarStyle.Continuous,
+            Y = Pos.AnchorEnd(),
+            Width = Dim.Fill()
+        };
         // Add the views to the Window
-        Add(firstNameLabel, firstNameText, lastNameLabel, lastNameText, passwordLabel, passwordText, label, startButton);
+        Add(firstNameLabel, firstNameText, lastNameLabel, lastNameText, passwordLabel, passwordText, label, startButton, _spinner);
+    }
+
+    private async Task Pulse(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            _progress.Pulse();
+            await Task.Delay(10, token);
+            await Task.Yield();
+        }
     }
 
     public override void EndInit()
@@ -114,18 +148,26 @@ public class ExampleWindow : Window
     private async Task GenerateTimesheet()
     {
         var date = DateTime.Today.AddMonths(-1);
+        var lastName = "Delcoigne";
+        var firstName = "Vincent";
+
+        var outputFile = Path.Combine(Environment.CurrentDirectory, $"TS-{date:yyyyMM}-{lastName}-{firstName}.xlsx");
         label.Text = "Fetching time entries from Toggl";
 
         var timeEntries = await Timesheet.Csharp.GetTimeEntriesAsync(_client, date);
         label.Text = "Generating Excel file";
 
-        Excel.generateExcel(@"c:\temp\TS_VD.xlsx", date, "Vincent", "Delcoigne", timeEntries);
-        await Task.Run(() => Excel.generateExcel(@"c:\temp\TS_VD.xlsx", date, "Delcoigne", "Vincent", timeEntries));
+        // Excel.generateExcel(@"c:\temp\TS_VD.xlsx", date, "Vincent", "Delcoigne", timeEntries);
+        await Task.Run(() => Excel.generateExcel(outputFile, date, lastName, firstName, timeEntries));
+        _spinner.Visible = false;
 
-        Common.openFile(@"c:\temp\TS_VD.xlsx");
+        Common.openFile(outputFile);
         var i = MessageBox.Query("Outlook", "Send email ?", "Ok", "Cancel");
-        Console.WriteLine(i);
 
+        if (i == 0)
+        {
+            Email.openEmail("delcoignevincent@gmail.com", date, outputFile);
+        }
         label.Text = "Done";
     }
 }
