@@ -14,20 +14,8 @@ open Toggl.Api
 
 // TODO:
 // Si c'est projet autre, prendre le libellé du pointage;
-// - Set :Thread & ThreadUI
-// translation
-let settings =
-    ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", false)
-        .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
-        .Build()
 
-let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
-let getTimeEntries = getTimeEntries client
-let openEmail = openEmail (settings["MailRecipients"])
-
-let askOpenEmail date outputFile =
+let askOpenEmail recipients date outputFile  =
     let confirmation =
         AnsiConsole.Prompt(
             TextPrompt<bool>("Open [bold dodgerblue1]Outlook[/] ?")
@@ -37,7 +25,7 @@ let askOpenEmail date outputFile =
                 .WithConverter(fun choice -> if choice then "y" else "n")
         )
 
-    if confirmation then openEmail date outputFile else ()
+    if confirmation then openEmail recipients date outputFile else ()
 
 let generate
     (
@@ -47,6 +35,20 @@ let generate
         outputDirMaybe: string option,
         forceMaybe: bool option
     ) =
+
+    let settings =
+        ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false)
+            .AddUserSecrets("e5ec099c-f0d8-49cf-8a1c-e3f0c5715645")
+            .Build()
+
+    if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
+        printfn "Please add the Toggl api key in appsettings.json"
+        printfn "Press any key to exit..."
+        Console.ReadKey() |> ignore
+        exit -1
+
     ExcelPackage.License.SetNonCommercialPersonal($"{lastName} {firstName}")
     let outputDir = defaultArg outputDirMaybe Environment.CurrentDirectory
     let date = defaultArg dateMaybe (DateTime.Today.AddMonths(-1))
@@ -61,10 +63,15 @@ let generate
         $"""Generating Timesheet for [bold slateblue1]{date.ToString("MMMM", CultureInfo.InvariantCulture)} {date.Year}[/]"""
     )
 
+    let client = new TogglClient(TogglClientOptions(Key = settings["Toggl:ApiKey"]))
+    let getTimeEntries = getTimeEntries client
+    let recipients = settings["MailRecipients"]
+    let askOpenEmail = askOpenEmail recipients date
+
     if File.Exists outputFile && not forceRegen then
         AnsiConsole.MarkupLine($"Reusing existing [bold green]Excel[/] file ({outputFile})")
         outputFile |> openFile
-        askOpenEmail date outputFile
+        outputFile |> askOpenEmail
         AnsiConsole.MarkupLine("Done")
     else
         AnsiConsole.MarkupLine("Fetching time entries from [bold red]Toggl[/]")
@@ -77,17 +84,12 @@ let generate
         )
 
         outputFile |> openFile
-        askOpenEmail date outputFile
+        outputFile |> askOpenEmail
 
         AnsiConsole.MarkupLine("Done")
 
 [<EntryPoint>]
 let main argv =
-    if String.IsNullOrWhiteSpace(settings["Toggl:ApiKey"]) then
-        printfn "Please add the Toggl api key (Toggl:ApiKey) in user secrets"
-        Console.ReadKey() |> ignore
-        exit -1
-
     rootCommand argv {
         description "Generates an Actiris Timesheet"
 
